@@ -91,36 +91,36 @@ class STFTAgent(Agent):
         return 1 if len(self.memory) == 0 else self.memory[-1]
 
 
-class PavlovAgent(Agent):
-    # Conditions opponent to cooperate, then betrays them
-    def __init__(self, memorySize, pavLength) -> None:
-        super().__init__(memorySize)
-        self.name = "Pavlov"
-        self.pavLength = pavLength
+# class PavlovAgent(Agent):
+#     # Conditions opponent to cooperate, then betrays them
+#     def __init__(self, memorySize, pavLength) -> None:
+#         super().__init__(memorySize)
+#         self.name = "Pavlov"
+#         self.pavLength = pavLength
 
-    def choose(self) -> int:
-        if len(self.memory) < self.pavLength:
-            return 0
+#     def choose(self) -> int:
+#         if len(self.memory) < self.pavLength:
+#             return 0
 
-        return int(not endsWith([0] * self.pavLength, self.memory))
+#         return int(not endsWith([0] * self.pavLength, self.memory))
 
 
-class GeneticAgent(Agent):
-    # Uses a custom ruleset by indexing a bit string with
-    # the binary number represented by the memory state
-    # TODO: need to keep track of own previous moves, as well as opponent's
-    # TODO: Create a mutator constructor, that makes some change to the ruleset
-    # TODO: rename 'ruleset' to 'chromosome'?
-    # TODO: Create a fitness function (just return score)
-    # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
-    def __init__(self, memorySize: int, ruleset: str) -> None:
-        super().__init__(memorySize)
-        self.ruleset = ruleset
-        self.name = f"Ruleset '{ruleset}'"
+# class GeneticAgent(Agent):
+#     # Uses a custom ruleset by indexing a bit string with
+#     # the binary number represented by the memory state
+#     # TODO: need to keep track of own previous moves, as well as opponent's
+#     # TODO: Create a mutator constructor, that makes some change to the ruleset
+#     # TODO: rename 'ruleset' to 'chromosome'?
+#     # TODO: Create a fitness function (just return score)
+#     # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
+#     def __init__(self, memorySize: int, ruleset: str) -> None:
+#         super().__init__(memorySize)
+#         self.ruleset = ruleset
+#         self.name = f"Ruleset '{ruleset}'"
 
-        if (2 ** memorySize - 1) != len(ruleset):
-            raise Error("Ruleset does not cover all (or covers too many) possible memory states")
+#         if (2 ** memorySize - 1) != len(ruleset):
+#             raise Error("Ruleset does not cover all (or covers too many) possible memory states")
 
-    def choose(self) -> int:
-        idx = int("".join(self.memory), 2)
-        return int(self.ruleset[idx])
+#     def choose(self) -> int:
+#         idx = int("".join(self.memory), 2)
+#         return int(self.ruleset[idx])
