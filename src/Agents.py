@@ -72,7 +72,7 @@ class TFNTAgent(Agent):
     # first two moves, always cooperate
     # if the opponent defects twice in a row, defect
     # 0 is cooperate, 1 is defect
-    def __init__(self, memorySize, tatLength) -> None:
+    def __init__(self, memorySize, tatLength=2) -> None:
         super().__init__(memorySize)
         self.name = f"Tit For {tatLength} Tat"
         self.tatLength = tatLength
