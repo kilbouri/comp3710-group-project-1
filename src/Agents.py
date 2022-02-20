@@ -15,7 +15,6 @@ class Agent:
         # choose should be overloaded
         pass
 
-    # TODO: memory needs to include my own previous moves, for genetic algorithms (slide 19)
     def updateMemory(self, opponentMove: int):
         if len(self.memory) >= self.memorySize:
             self.memory.pop(0)  # remove first element
@@ -106,9 +105,14 @@ class PavlovAgent(Agent):
         return int(not endsWith([0] * self.pavLength, self.memory))
 
 
-class CustomRulesetAgent(Agent):
+class GeneticAgent(Agent):
     # Uses a custom ruleset by indexing a bit string with
     # the binary number represented by the memory state
+    # TODO: need to keep track of own previous moves, as well as opponent's
+    # TODO: Create a mutator constructor, that makes some change to the ruleset
+    # TODO: rename 'ruleset' to 'chromosome'?
+    # TODO: Create a fitness function (just return score)
+    # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
     def __init__(self, memorySize: int, ruleset: str) -> None:
         super().__init__(memorySize)
         self.ruleset = ruleset
