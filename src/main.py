@@ -1,9 +1,9 @@
 from pprint import pprint
-from game import Game, Batch
+from game import Game, Batch, mean
 from Agents import *
 
-GAME_LENGTH = 4
-MEMORY_SIZE = 4
+GAME_LENGTH = 50
+MEMORY_SIZE = 3
 REWARD_TABLE = [
     [(3, 3), (0, 5)],
     [(5, 0), (1, 1)]
@@ -47,13 +47,13 @@ def testGame():
         print(f"The {winner} won with a score of {max(scoreA, scoreB)}")
 
 def testBatch():
-    batch = Batch(CooperativeAgent, TFTAgent, GAME_LENGTH, numGames=10, memorySize=MEMORY_SIZE)
-    batch.run()
-    print(f"Average score for A: {__mean(batch.fitnessA)}")
-    print(f"Average score for B: {__mean(batch.fitnessB)}")
+    batch = Batch(DefectiveAgent, TFTAgent, GAME_LENGTH, numGames=10, memorySize=MEMORY_SIZE)
+    aScore, bScore = batch.run()
+    print(f"Average score for A: {aScore}")
+    print(f"Average score for B: {bScore}")
 
 def main():
-    testGame()
+    testBatch()
 
 if __name__ == "__main__":
     main()

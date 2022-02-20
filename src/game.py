@@ -1,4 +1,5 @@
 from Agents import Agent
+from pprint import pprint
 
 # game class to run a game between two agents
 
@@ -11,8 +12,14 @@ choiceMap = {
     0: "cooperate"
 }
 
-def __mean(_: list) -> float:
+def mean(_: list) -> float:
     return sum(_) / len(_)
+
+def moves(agentA, agentB, numSteps):
+    for _ in range(numSteps):
+        aChoice = agentA.choose()
+        bChoice = agentB.choose()
+        yield aChoice, bChoice
 
 class Game:
     # Contains relevant functions to run a game between two agents
@@ -23,24 +30,20 @@ class Game:
         self.debug = debug
 
     def play(self):
-        for aChoice, bChoice in self.__moves(self.agentA, self.agentB, self.numSteps):
+        for aChoice, bChoice in moves(self.agentA, self.agentB, self.numSteps):
             self.agentA.updateMemory(bChoice)
             self.agentB.updateMemory(aChoice)
-            self.agentA.fitness += REWARD_TABLE[aChoice][bChoice][0]
-            self.agentB.fitness += REWARD_TABLE[bChoice][aChoice][1]
+            aReward = REWARD_TABLE[aChoice][bChoice][0]
+            bReward = REWARD_TABLE[aChoice][bChoice][1]
+            self.agentA.fitness += aReward
+            self.agentB.fitness += bReward
 
-            if debug:
+            if self.debug:
                 pprint(f"A chose to {choiceMap[aChoice]} and received {aReward} points.")
                 pprint(f"B chose to {choiceMap[bChoice]} and received {bReward} points.")
                 print()
 
         return self.agentA.fitness, self.agentB.fitness
-
-    def __moves(agentA, agentB, numSteps):
-        for _ in range(numSteps):
-            aChoice = agentA.choose()
-            bChoice = agentB.choose()
-            yield aChoice, bChoice
 
 class Batch:
     # Class for batch testing will:
@@ -54,15 +57,16 @@ class Batch:
         self.classB = classB
         self.gameLength = gameLength
         self.numGames = numGames
+        self.memorySize = memorySize
         self.fitnessA = []
         self.fitnessB = []
 
     def run(self):
         for _ in range(self.numGames):
-            agentA = self.classA()
-            agentB = self.classB()
+            agentA = self.classA(self.memorySize)
+            agentB = self.classB(self.memorySize)
             game = Game(agentA, agentB, self.gameLength)
             fitnessA, fitnessB = game.play()
             self.fitnessA.append(fitnessA)
             self.fitnessB.append(fitnessB)
-        return __mean(self.fitnessA), __mean(self.fitnessB)
+        return mean(self.fitnessA), mean(self.fitnessB)
