@@ -15,6 +15,7 @@ class Agent:
         # choose should be overloaded
         pass
 
+    # TODO: memory needs to include my own previous moves, for genetic algorithms (slide 19)
     def updateMemory(self, opponentMove: int):
         if len(self.memory) >= self.memorySize:
             self.memory.pop(0)  # remove first element
