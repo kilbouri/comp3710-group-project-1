@@ -1,14 +1,14 @@
 # Project 1
 
-### Requirements
+## Requirements
 
 Submit a complete technical report on a project about the Iterated Prisoners’ Dilemma that will be presented during the class.
 
-### Details Contents
+## Details Contents
 
 You will form groups of 3 or 4.
 
-### Final technical report (6-8 pages) due Feb 28<sup>th</sup>; make sure to include the following sections
+## Final technical report (6-8 pages) due Feb 28<sup>th</sup>; make sure to include the following sections
 
 - Abstract (150-200 words summarizing your work and highlight your findings)
 - Introduction (general overview, motivation, your contribution)
