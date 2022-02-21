@@ -5,7 +5,7 @@ from Utility import endsWith
 
 class Agent:
     # An "empty" agent which serves as the base of all other agents
-    def __init__(self, memorySize: int) -> None:
+    def __init__(self, memorySize: int = 3) -> None:
         self.name = "Empty"
         self.memory: list[int] = []
         self.memorySize: int = memorySize
@@ -19,6 +19,10 @@ class Agent:
         if len(self.memory) >= self.memorySize:
             self.memory.pop(0)  # remove first element
         self.memory.append(opponentMove)
+
+    def reset(self):
+        self.fitness = 0
+        self.memory = []
 
     def __str__(self) -> str:
         return f"{self.name} Agent"
@@ -108,25 +112,29 @@ class PavlovAgent(Agent):
 class GeneticAgent(Agent):
     # LATER: need to keep track of own previous moves, as well as opponent's
     # MAYBE: Create a mutator constructor, that makes some change to the ruleset
-    def __init__(self, memorySize: int, ruleset: str=None) -> None:
+    def __init__(self, memorySize: int = 3, ruleset: str = None) -> None:
         super().__init__(memorySize)
+        self.name = f"Genetic"
+        self.memorySize = memorySize
         self.ruleset = ruleset
-        self.name = f"Genetic"
-        if ruleset is None:
-            ruleset = [round(uniform(0, 1)) for _ in range(2 ** memorySize + memorySize)]
-        if (2 ** memorySize + memorySize) != len(ruleset):
-            raise Error("Ruleset does not cover all (or covers too many) possible memory states")
+        if self.ruleset is None:
+            self.ruleset = [round(uniform(0, 1))
+                       for _ in range(2 ** memorySize + memorySize)]
+        if (2 ** memorySize + memorySize) != len(self.ruleset):
+            raise ValueError(
+                "Ruleset does not cover all (or covers too many) possible memory states")
 
-    def __init__(self, parentA:Agent, parentB:Agent) -> None:
+    def reproduce(self, partner) -> None:
         # two parents produce a child, child inherits more genes from fitter parent, up to 80% favoritism
-        super().__init__(parentA.memorySize)
-        assert(parentA.memorySize == parentB.memorySize)
-        self.name = f"Genetic"
-        self.ruleset = [c[int(uniform(0,1) > max(min(parentA.fitness / parentB.fitness, 0.8), 0.2))] for c in zip(parentA.ruleset, parentB.ruleset)]
+        assert(self.memorySize == partner.memorySize)
+        rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
+              for c in zip(self.ruleset, partner.ruleset)]
+        return GeneticAgent(self.memorySize, rs)
 
     def choose(self) -> int:
         # the last bit of the ruleset is for the first few turns in a game
         if len(self.memory) < self.memorySize:
             return self.ruleset[len(self.ruleset) - self.memorySize + len(self.memory)]
         else:
-            return self.ruleset[int("".join(self.memory), 2)]
+            # print(self.memory)
+            return self.ruleset[int("".join(map(str,self.memory)), 2)]
