@@ -59,11 +59,17 @@ class Batch:
         self.memorySize = memorySize
         self.fitnessA = []
         self.fitnessB = []
+        self.MLA = None
+        self.MLB = None
+
+    def predefinedAgents(self, agentA, agentB):
+        self.MLA = agentA
+        self.MLB = agentB
 
     def run(self):
         for _ in range(self.numGames):
-            agentA = self.classA(self.memorySize)
-            agentB = self.classB(self.memorySize)
+            agentA = self.classA(self.memorySize) if self.MLA is None else self.MLA
+            agentB = self.classB(self.memorySize) if self.MLB is None else self.MLB
             game = Game(agentA, agentB, self.gameLength)
             fitnessA, fitnessB = game.play()
             self.fitnessA.append(fitnessA)
