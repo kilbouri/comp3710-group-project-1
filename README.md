@@ -27,7 +27,15 @@ Submit a complete technical report on a project about the Iterated Prisoners’ 
 | RAND    | 4.0   | 2.25 | 0.5   | 2.25    |
 | ALL-D   | 5.0   | 3.0  | 1.0   | 3.0     |
 
-_\*\*We will initially perform an analysis similar to this one with some non-genetic simple agents_
+### Initial testing on simple agents, small population
+
+|       -        | Random//Random | Random//Tit For Tat | Random//Pavlov | Tit For Tat//Tit For Tat | Tit For Tat//Pavlov | Pavlov//Pavlov |
+| -------------- | -------------- | ------------------- | -------------- | ------------------------ | ------------------- | -------------- |
+| winner         | Random         | Random              | Pavlov         | TIE                      | TIE                 | TIE            |
+| avg A score    | 22.7           | 23.9                | 18.7           | 30.0                     | 30.0                | 30.0           |
+| avg B score    | 23.7           | 21.9                | 26.2           | 30.0                     | 30.0                | 30.0           |
+| A/B avg        | 0.957806       | 1.091324            | 0.71374        | 1.0                      | 1.0                 | 1.0            |
+| all identical? | False          | False               | False          | True                     | True                | True           |
 
 ### Genetic Algorithms
 
