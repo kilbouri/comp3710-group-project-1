@@ -1,5 +1,4 @@
-from pprint import pprint
-from game import Game, Batch, mean
+from Game import Game, Batch, mean
 from Agents import *
 
 GAME_LENGTH = 50
@@ -9,36 +8,15 @@ REWARD_TABLE = [
     [(5, 0), (1, 1)]
 ]
 
-# choiceMap = {
-#     1: "defect",
-#     0: "cooperate"
-# }
-
 def testGame():
     agentA = CooperativeAgent(MEMORY_SIZE)
     agentB = TFTAgent(MEMORY_SIZE)
-
-    # scoreA = 0
-    # scoreB = 0
 
     print(f"Starting {GAME_LENGTH}-move game...")
     print(f"Using {agentA} for A and {agentB} for B")
     print()
 
     scoreA, scoreB = Game(agentA, agentB, GAME_LENGTH, debug=True).play()
-
-    # for aChoice, bChoice in moves(agentA, agentB, GAME_LENGTH):
-    #     aReward, bReward = REWARD_TABLE[aChoice][bChoice]
-    #     scoreA += aReward
-    #     scoreB += bReward
-
-    #     pprint(f"A chose to {choiceMap[aChoice]} and received {aReward} points.")
-    #     pprint(f"B chose to {choiceMap[bChoice]} and received {bReward} points.")
-
-    #     agentA.updateMemory(bChoice)
-    #     agentB.updateMemory(aChoice)
-
-    #     print()
 
     if (scoreA == scoreB):
         print(f"{agentA} and {agentB} tied")

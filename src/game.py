@@ -2,7 +2,6 @@ from Agents import Agent
 from pprint import pprint
 
 # game class to run a game between two agents
-
 REWARD_TABLE = [
     [(3, 3), (0, 5)],
     [(5, 0), (1, 1)]
