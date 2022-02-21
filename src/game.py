@@ -12,8 +12,8 @@ choiceMap = {
     0: "cooperate"
 }
 
-def mean(_: list) -> float:
-    return sum(_) / len(_)
+def mean(l: list) -> float:
+    return sum(l) / len(l)
 
 def moves(agentA, agentB, numSteps):
     for _ in range(numSteps):
