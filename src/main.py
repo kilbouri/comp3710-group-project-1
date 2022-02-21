@@ -42,8 +42,7 @@ def testGame():
 
 
 def testBatch():
-    batch = Batch(DefectiveAgent, TFTAgent, GAME_LENGTH,
-                  numGames=10, memorySize=MEMORY_SIZE)
+    batch = Batch(DefectiveAgent, TFTAgent, GAME_LENGTH, numGames=10, memorySize=MEMORY_SIZE)
     aScore, bScore = batch.run()
     print(f"Average score for A: {aScore}")
     print(f"Average score for B: {bScore}")
@@ -52,8 +51,7 @@ def testBatch():
 def testCompare():
     # run one with only three agents, print result to terminal
     classes = [RandomAgent, TFTAgent, PavlovAgent]
-    comp = Comparison(classes, GAME_LENGTH, numGames=10,
-                      memorySize=MEMORY_SIZE)
+    comp = Comparison(classes, GAME_LENGTH, numGames=10, memorySize=MEMORY_SIZE)
     comp.run()
     print(comp)
 
