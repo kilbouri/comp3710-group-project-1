@@ -106,14 +106,8 @@ class PavlovAgent(Agent):
 
 
 class GeneticAgent(Agent):
-    # Uses a custom ruleset by indexing a bit string with
-    # the binary number represented by the memory state
-    # DONE: ruleset is a list of integer 0 or 1
     # LATER: need to keep track of own previous moves, as well as opponent's
     # MAYBE: Create a mutator constructor, that makes some change to the ruleset
-    # DONE: Create a crossover constructor, that takes two parents and creates a child
-    # TODO: Create a fitness function (just return score)
-    # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
     def __init__(self, memorySize: int, ruleset: str=None) -> None:
         super().__init__(memorySize)
         self.ruleset = ruleset
@@ -123,7 +117,7 @@ class GeneticAgent(Agent):
         if (2 ** memorySize + memorySize) != len(ruleset):
             raise Error("Ruleset does not cover all (or covers too many) possible memory states")
 
-    def __init__(self, parentA:Agent, parentB:Agent):
+    def __init__(self, parentA:Agent, parentB:Agent) -> None:
         # two parents produce a child, child inherits more genes from fitter parent, up to 80% favoritism
         super().__init__(parentA.memorySize)
         assert(parentA.memorySize == parentB.memorySize)
@@ -131,5 +125,8 @@ class GeneticAgent(Agent):
         self.ruleset = [c[int(uniform(0,1) > max(min(parentA.fitness / parentB.fitness, 0.8), 0.2))] for c in zip(parentA.ruleset, parentB.ruleset)]
 
     def choose(self) -> int:
-        idx = int("".join(self.memory), 2)
-        return int(self.ruleset[idx])
+        # the last bit of the ruleset is for the first few turns in a game
+        if len(self.memory) < self.memorySize:
+            return self.ruleset[len(self.ruleset) - self.memorySize + len(self.memory)]
+        else:
+            return self.ruleset[int("".join(self.memory), 2)]
