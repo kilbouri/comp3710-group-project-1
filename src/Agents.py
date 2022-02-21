@@ -91,18 +91,18 @@ class STFTAgent(Agent):
         return 1 if len(self.memory) == 0 else self.memory[-1]
 
 
-# class PavlovAgent(Agent):
-#     # Conditions opponent to cooperate, then betrays them
-#     def __init__(self, memorySize, pavLength) -> None:
-#         super().__init__(memorySize)
-#         self.name = "Pavlov"
-#         self.pavLength = pavLength
+class PavlovAgent(Agent):
+    # Conditions opponent to cooperate, then betrays them
+    def __init__(self, memorySize: int, pavLength: int = 3) -> None:
+        super().__init__(memorySize)
+        self.name = "Pavlov"
+        self.pavLength = pavLength
 
-#     def choose(self) -> int:
-#         if len(self.memory) < self.pavLength:
-#             return 0
+    def choose(self) -> int:
+        if len(self.memory) < self.pavLength:
+            return 0
 
-#         return int(not endsWith([0] * self.pavLength, self.memory))
+        return int(not endsWith([0] * self.pavLength, self.memory))
 
 
 # class GeneticAgent(Agent):

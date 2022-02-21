@@ -33,8 +33,7 @@ class Game:
         for aChoice, bChoice in moves(self.agentA, self.agentB, self.numSteps):
             self.agentA.updateMemory(bChoice)
             self.agentB.updateMemory(aChoice)
-            aReward = REWARD_TABLE[aChoice][bChoice][0]
-            bReward = REWARD_TABLE[aChoice][bChoice][1]
+            aReward, bReward = REWARD_TABLE[aChoice][bChoice]
             self.agentA.fitness += aReward
             self.agentB.fitness += bReward
 
@@ -50,7 +49,7 @@ class Batch:
 
     # Initialize with two agent class types as parameters, as well as the game length in turns and the total number of games
     # Run N games between the two, recording the results of each game
-    # Return a tuple, containing the average (fitness) score of each agent across the batch
+    # Returns two lists, one for each agent, containing each score result for each game
 
     def __init__(self, classA, classB, gameLength:int=50, numGames:int=50, memorySize:int=3):
         self.classA = classA
@@ -69,4 +68,4 @@ class Batch:
             fitnessA, fitnessB = game.play()
             self.fitnessA.append(fitnessA)
             self.fitnessB.append(fitnessB)
-        return mean(self.fitnessA), mean(self.fitnessB)
+        return self.fitnessA, self.fitnessB
