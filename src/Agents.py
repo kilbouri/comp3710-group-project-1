@@ -105,22 +105,31 @@ class PavlovAgent(Agent):
         return int(not endsWith([0] * self.pavLength, self.memory))
 
 
-# class GeneticAgent(Agent):
-#     # Uses a custom ruleset by indexing a bit string with
-#     # the binary number represented by the memory state
-#     # TODO: need to keep track of own previous moves, as well as opponent's
-#     # TODO: Create a mutator constructor, that makes some change to the ruleset
-#     # TODO: rename 'ruleset' to 'chromosome'?
-#     # TODO: Create a fitness function (just return score)
-#     # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
-#     def __init__(self, memorySize: int, ruleset: str) -> None:
-#         super().__init__(memorySize)
-#         self.ruleset = ruleset
-#         self.name = f"Ruleset '{ruleset}'"
+class GeneticAgent(Agent):
+    # Uses a custom ruleset by indexing a bit string with
+    # the binary number represented by the memory state
+    # DONE: ruleset is a list of integer 0 or 1
+    # LATER: need to keep track of own previous moves, as well as opponent's
+    # MAYBE: Create a mutator constructor, that makes some change to the ruleset
+    # DONE: Create a crossover constructor, that takes two parents and creates a child
+    # TODO: Create a fitness function (just return score)
+    # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
+    def __init__(self, memorySize: int, ruleset: str=None) -> None:
+        super().__init__(memorySize)
+        self.ruleset = ruleset
+        self.name = f"Genetic"
+        if ruleset is None:
+            ruleset = [round(uniform(0, 1)) for _ in range(2 ** memorySize + memorySize)]
+        if (2 ** memorySize + memorySize) != len(ruleset):
+            raise Error("Ruleset does not cover all (or covers too many) possible memory states")
 
-#         if (2 ** memorySize - 1) != len(ruleset):
-#             raise Error("Ruleset does not cover all (or covers too many) possible memory states")
+    def __init__(self, parentA:Agent, parentB:Agent):
+        # two parents produce a child, child inherits more genes from fitter parent, up to 80% favoritism
+        super().__init__(parentA.memorySize)
+        assert(parentA.memorySize == parentB.memorySize)
+        self.name = f"Genetic"
+        self.ruleset = [c[int(uniform(0,1) > max(min(parentA.fitness / parentB.fitness, 0.8), 0.2))] for c in zip(parentA.ruleset, parentB.ruleset)]
 
-#     def choose(self) -> int:
-#         idx = int("".join(self.memory), 2)
-#         return int(self.ruleset[idx])
+    def choose(self) -> int:
+        idx = int("".join(self.memory), 2)
+        return int(self.ruleset[idx])
