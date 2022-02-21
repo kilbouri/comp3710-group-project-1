@@ -1,7 +1,7 @@
 from pprint import pprint
 from game import Game, Batch, mean, REWARD_TABLE
 from Agents import *
-from compare import Comparison
+from compare import Comparison, Population
 from pandas import DataFrame
 
 GAME_LENGTH = 10
@@ -63,8 +63,12 @@ def testCompare():
     comp.df().to_csv("../simple.csv")
 
 
+def testTrain():
+    pop = Population()
+    pop.train(100, opponentType=TFTAgent)
+
 def main():
-    testCompare()
+    testTrain()
 
 
 if __name__ == "__main__":
