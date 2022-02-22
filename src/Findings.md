@@ -22,6 +22,7 @@ After training a population of GAs against TFT agents, two agents were created f
 Then, these two agents were tested against each other, with the following results:
 
 ```txt
+(3 memory, 100 generations, 10 games @ 50 turns, 100 population)
 Training against Tit For Tat opponents |################################| 100/100
 fittest ruleset is CDDCCCCCCCC
 average ruleset is DDDCDDCCCDC
@@ -32,3 +33,39 @@ Average score for B: 1752.0
 Although the fittest ruleset is more 'fit', since it cooperates almost every time, the average ruleset *dominates* the game, since it defects more often.
 
 It should also be noted that the mutation rate is 100%, so further testing will be necessary. The current mutation algorithm is much too erratic.
+
+### GA vs GA
+
+Initial findings were that a small training size saw the average genome dominate the fittest one. 
+
+```txt
+(3 memory, 100 generations, 10 games @ 30 turns, 100 population)
+Training against Genetic opponents |################################| 100/100
+fittest ruleset is DDDCDCDCCDC
+average ruleset is DDDDCCCDCDD
+Average score for fittest: 352.0
+Average score for average: 1232.0
+```
+
+#### More extensive testing
+
+First test with a high number of generations
+
+```txt
+(3 memory, 500 generations, 10 games @ 64 turns, 100 population)
+Training against Genetic opponents |################################| 500/500
+fittest ruleset is DCDDDCCDCDD
+average ruleset is DCDCCDCDDCD
+Average score for fittest: 1053.6
+Average score for average: 472.1
+```
+
+Test with a (much) larger memory, over 1000 generations, and 5x population size
+
+```txt
+(6 memory, 1000 generations, 10 games @ 64 turns, 500 population)
+fittest ruleset is DDCDDCCDCCDDCDDDDCCDDCCCDCDCCDCDDCCDCDDDDCCCCDCDDDCDDDDCDCCCDDDDCDDDDC
+average ruleset is DDCCCCCDDDCDCDCCCCDDDDCCDCCDDDDCCDCCDCDDCDDDCDDDCCDDDDCDCDDDCDDCDCDCDC
+Average score for fittest: 1666.0
+Average score for average: 66.0
+```
