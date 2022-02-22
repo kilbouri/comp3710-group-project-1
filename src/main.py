@@ -64,8 +64,17 @@ def testCompare():
 
 
 def testTrain():
-    pop = Population()
+    pop = Population(memorySize=MEMORY_SIZE, populationSize=100)
     pop.train(100, opponentType=TFTAgent)
+    print(f'fittest ruleset is {pop.fittestChromosome()}')
+    print(f'average ruleset is {pop.averageChromosome()}')
+
+    # now, run a batch between the average ruleset and the fittest ruleset
+    batch = Batch(None, None, gameLength=64, numGames=10)
+    batch.predefinedAgents(GeneticAgent(ruleset=pop.fittestChromosome()), GeneticAgent(ruleset=pop.averageChromosome()))
+    aScore, bScore = batch.run()
+    print(f"Average score for fittest: {mean(aScore)}")
+    print(f"Average score for average: {mean(bScore)}")
 
 def main():
     testTrain()
