@@ -1,6 +1,7 @@
 # from msilib.schema import Error
 from random import uniform
 from Utility import endsWith
+from collections import defaultdict
 
 
 class Agent:
@@ -117,9 +118,13 @@ class GeneticAgent(Agent):
         self.name = f"Genetic"
         self.memorySize = memorySize
         self.ruleset = ruleset
+        if isinstance(self.ruleset, str):
+            self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
+        self.rulefreq = defaultdict(int) # keep track of frequency of each move
+        self.rulehist = []
         if self.ruleset is None:
             self.ruleset = [round(uniform(0, 1))
-                       for _ in range(2 ** memorySize + memorySize)]
+                            for _ in range(2 ** memorySize + memorySize)]
         if (2 ** memorySize + memorySize) != len(self.ruleset):
             raise ValueError(
                 "Ruleset does not cover all (or covers too many) possible memory states")
@@ -132,9 +137,17 @@ class GeneticAgent(Agent):
         return GeneticAgent(self.memorySize, rs)
 
     def choose(self) -> int:
-        # the last bit of the ruleset is for the first few turns in a game
         if len(self.memory) < self.memorySize:
-            return self.ruleset[len(self.ruleset) - self.memorySize + len(self.memory)]
+            # first few moves, use the sequence at the end of ruleset
+            move = self.ruleset[len(self.ruleset) -
+                                self.memorySize + len(self.memory)]
         else:
-            # print(self.memory)
-            return self.ruleset[int("".join(map(str,self.memory)), 2)]
+            move = self.ruleset[int("".join(map(str, self.memory)), 2)]
+            self.rulefreq[move] += 1
+        self.rulehist.append(move)
+        return move
+
+    def reset(self):
+        super().reset()
+        self.rulefreq = defaultdict(int)
+        self.rulehist = []
