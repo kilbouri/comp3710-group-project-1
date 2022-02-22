@@ -1,10 +1,11 @@
 # Compare the different agents in Agents.py, running Batches of Games in game.py
 
-from itertools import combinations_with_replacement as cwr
+from itertools import combinations_with_replacement as cwr, combinations as comb
 from game import Batch, mean
 from Agents import *
 import pandas as pd
-from random import randrange as rr
+from random import randrange as rr, shuffle
+from progress.bar import Bar
 
 
 def allsame(lst):
@@ -76,11 +77,19 @@ class Population:
         # For each matchup, if the opponent is a GeneticAgent, play against random other individual
         # If the opponent is a simple agent, train each agent against the simple agent
 
-        for individual in self.population:
-            batch = Batch(GeneticAgent, opponentType, gameLength, numGames)
-            batch.predefinedAgents(individual, self.population[uniform(
-                0, self.populationSize-1)] if opponentType == GeneticAgent else None)
-            batch.run()
+        if opponentType != GeneticAgent:
+            for individual in self.population:
+                batch = Batch(GeneticAgent, opponentType, gameLength, numGames)
+                batch.predefinedAgents(individual, None)
+                batch.run()
+        else:
+            p = self.population[:]
+            shuffle(p)
+            # NOTE: fails if populationSize is odd
+            for a, b in zip(p[:self.populationSize/2], p[self.populationSize/2:]):
+                batch = Batch(GeneticAgent, GeneticAgent, gameLength, numGames)
+                batch.predefinedAgents(a, b)
+                batch.run()
 
     def evolve(self):
         # keep top 10% of population, fill back up with offspring
@@ -96,6 +105,22 @@ class Population:
 
     def train(self, ngens: int, opponentType=GeneticAgent, gameLength: int = 50, numGames: int = 10):
         # train the population for a number of generations
-        for i in range(ngens):
+        bar = Bar(f'Training against {opponentType(3).name} opponents', max=ngens)
+        for i in range(ngens-1):
             self.play(opponentType, gameLength, numGames)
             self.evolve()
+            bar.next()
+        self.play(opponentType, gameLength, numGames)
+        bar.next()
+        bar.finish()
+
+    def fittestChromosome(self):
+        # return the fittest individual chromosome in the population
+        return ''.join([{0:'C', 1:'D'}[c] for c in max(self.population, key=lambda x: x.fitness).ruleset])
+
+    def averageChromosome(self):
+        # return the average chromosome in the population
+        chromosome = []
+        for c in zip(*[i.ruleset for i in self.population]):
+            chromosome.append('C' if mean(c) < 0.5 else 'D')
+        return ''.join(chromosome)
