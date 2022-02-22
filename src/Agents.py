@@ -113,7 +113,7 @@ class PavlovAgent(Agent):
 class GeneticAgent(Agent):
     # LATER: need to keep track of own previous moves, as well as opponent's
     # MAYBE: Create a mutator constructor, that makes some change to the ruleset
-    def __init__(self, memorySize: int = 3, ruleset: str = None) -> None:
+    def __init__(self, memorySize, ruleset: str = None) -> None:
         super().__init__(memorySize)
         self.name = f"Genetic"
         self.memorySize = memorySize
