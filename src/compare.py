@@ -86,7 +86,7 @@ class Population:
             p = self.population[:]
             shuffle(p)
             # NOTE: fails if populationSize is odd
-            for a, b in zip(p[:self.populationSize/2], p[self.populationSize/2:]):
+            for a, b in zip(p[:self.populationSize//2], p[self.populationSize//2:]):
                 batch = Batch(GeneticAgent, GeneticAgent, gameLength, numGames)
                 batch.predefinedAgents(a, b)
                 batch.run()
