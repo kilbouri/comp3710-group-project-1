@@ -37,7 +37,7 @@ class RandomAgent(Agent):
         self.defectProbability = defectProbability
 
     def choose(self) -> int:
-        return uniform(0, 1) >= self.defectProbability
+        return int(uniform(0, 1) >= self.defectProbability)
 
 
 class CooperativeAgent(Agent):
@@ -111,17 +111,16 @@ class PavlovAgent(Agent):
 
 
 class GeneticAgent(Agent):
-    # LATER: need to keep track of own previous moves, as well as opponent's
-    # MAYBE: Create a mutator constructor, that makes some change to the ruleset
     def __init__(self, memorySize, ruleset: str = None) -> None:
+        # ruleset can be either str or list[int]
         super().__init__(memorySize)
         self.name = f"Genetic"
         self.memorySize = memorySize
         self.ruleset = ruleset
         if isinstance(self.ruleset, str):
             self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
-        self.rulefreq = defaultdict(int) # keep track of frequency of each move
-        self.rulehist = []
+        # self.rulefreq = defaultdict(int) # keep track of frequency of each move
+        # self.rulehist = []
         if self.ruleset is None:
             self.ruleset = [round(uniform(0, 1))
                             for _ in range(2 ** memorySize + memorySize)]
@@ -129,11 +128,17 @@ class GeneticAgent(Agent):
             raise ValueError(
                 "Ruleset does not cover all (or covers too many) possible memory states")
 
-    def reproduce(self, partner) -> None:
+    def reproduce(self, partner=None) -> None:
         # two parents produce a child, child inherits more genes from fitter parent, up to 80% favoritism
-        assert(self.memorySize == partner.memorySize)
-        rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
-              for c in zip(self.ruleset, partner.ruleset)]
+        if partner is not None: # if partner is not None, then this is a reproduction with two parents
+            assert(self.memorySize == partner.memorySize)
+            if partner.fitness == 0:
+                partner.fitness = 1
+            rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
+                  for c in zip(self.ruleset, partner.ruleset)]
+        else: # if partner is None, then this is a reproduction with one parent, using a mutation rate
+            mutationRate = 0.1
+            rs = [rule if uniform(0, 1) > mutationRate else int(not rule) for rule in self.ruleset]
         return GeneticAgent(self.memorySize, rs)
 
     def choose(self) -> int:
@@ -143,11 +148,12 @@ class GeneticAgent(Agent):
                                 self.memorySize + len(self.memory)]
         else:
             move = self.ruleset[int("".join(map(str, self.memory)), 2)]
-            self.rulefreq[move] += 1
-        self.rulehist.append(move)
+            # self.rulefreq[move] += 1
+        # self.rulehist.append(move)
         return move
 
     def reset(self):
+        # here for if I want to add extra stuff to reset
         super().reset()
-        self.rulefreq = defaultdict(int)
-        self.rulehist = []
+        # self.rulefreq = defaultdict(int)
+        # self.rulehist = []
