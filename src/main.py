@@ -12,27 +12,11 @@ def testGame():
     agentA = CooperativeAgent(MEMORY_SIZE)
     agentB = TFTAgent(MEMORY_SIZE)
 
-    # scoreA = 0
-    # scoreB = 0
-
     print(f"Starting {GAME_LENGTH}-move game...")
     print(f"Using {agentA} for A and {agentB} for B")
     print()
 
     scoreA, scoreB = Game(agentA, agentB, GAME_LENGTH, debug=True).play()
-
-    # for aChoice, bChoice in moves(agentA, agentB, GAME_LENGTH):
-    #     aReward, bReward = REWARD_TABLE[aChoice][bChoice]
-    #     scoreA += aReward
-    #     scoreB += bReward
-
-    #     pprint(f"A chose to {choiceMap[aChoice]} and received {aReward} points.")
-    #     pprint(f"B chose to {choiceMap[bChoice]} and received {bReward} points.")
-
-    #     agentA.updateMemory(bChoice)
-    #     agentB.updateMemory(aChoice)
-
-    #     print()
 
     if (scoreA == scoreB):
         print(f"{agentA} and {agentB} tied")
@@ -64,20 +48,22 @@ def testCompare():
 
 
 def testTrain():
-    pop = Population(memorySize=MEMORY_SIZE, populationSize=100)
-    pop.train(100, opponentType=TFTAgent)
+    pop = Population(memorySize=6, populationSize=500)
+    pop.train(100, opponentType=TFTAgent, gameLength=30, numGames=10)
     print(f'fittest ruleset is {pop.fittestChromosome()}')
     print(f'average ruleset is {pop.averageChromosome()}')
 
     # now, run a batch between the average ruleset and the fittest ruleset
-    batch = Batch(None, None, gameLength=64, numGames=10)
-    batch.predefinedAgents(GeneticAgent(ruleset=pop.fittestChromosome()), GeneticAgent(ruleset=pop.averageChromosome()))
-    aScore, bScore = batch.run()
-    print(f"Average score for fittest: {mean(aScore)}")
-    print(f"Average score for average: {mean(bScore)}")
+    # batch = Batch(None, None, gameLength=64, numGames=10)
+    # batch.predefinedAgents(GeneticAgent(ruleset=pop.fittestChromosome()), GeneticAgent(ruleset=pop.averageChromosome()))
+    # batch.predefinedAgents(GeneticAgent(memorySize=6,ruleset='DDCDDCCDCCDDCDDDDCCDDCCCDCDCCDCDDCCDCDDDDCCCCDCDDDCDDDDCDCCCDDDDCDDDDC'), GeneticAgent(memorySize=6,ruleset='DDCCCCCDDDCDCDCCCCDDDDCCDCCDDDDCCDCCDCDDCDDDCDDDCCDDDDCDCDDDCDDCDCDCDC'))
+    # aScore, bScore = batch.run()
+    # print(f"Average score for fittest: {mean(aScore)}")
+    # print(f"Average score for average: {mean(bScore)}")
 
+import train
 def main():
-    testTrain()
+    train.bulkTrain()
 
 
 if __name__ == "__main__":
