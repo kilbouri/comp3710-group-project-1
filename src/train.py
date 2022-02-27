@@ -12,14 +12,13 @@ agentStrings = {
     'CooperativeAgent': CooperativeAgent,
     'DefectiveAgent': DefectiveAgent,
     'TFTAgent': TFTAgent,
-    'DefectiveAgent': DefectiveAgent,
     'TFNTAgent': TFNTAgent,
     'STFTAgent': STFTAgent,
     'PavlovAgent': PavlovAgent,
     'GeneticAgent': GeneticAgent
 }
 
-def bulkTrain():
+def dualBulkTrain():
     # Run a set of training against each simple agent. Record the results in a csv file.
     # 1000 generations, 10 games per generation, 500 agents, 64 turns per game, 3 memory
     memsize = 6
@@ -27,7 +26,8 @@ def bulkTrain():
     games = 10
     turns = 64
     generations = 1000
-    csvpath = '../dualParentBulkTrained6mem.csv'
+    nParents = 2
+    csvpath = '../trainingCache.csv'
 
     allAgents = list(agentStrings.keys())
     if not path.exists(csvpath):
@@ -52,7 +52,8 @@ def bulkTrainSingle():
     games = 10
     turns = 64
     generations = 1000
-    csvpath = '../dualParentBulkTrained6mem.csv'
+    nParents = 1
+    csvpath = '../trainingCache.csv'
 
     allAgents = list(agentStrings.keys())
     if not path.exists(csvpath):
@@ -66,4 +67,12 @@ def bulkTrainSingle():
             pop.train(generations, opponentType=agentStrings[agent], gameLength=turns, numGames=games, singleReproduction=True)
             fittest = pop.fittestChromosome()
             average = pop.averageChromosome()
-            writer.writerow([agent, fittest, average, memsize, generations, turns, games])
+            writer.writerow([agent, fittest, average, memsize, generations, turns, games, nParents])
+
+
+def main():
+    bulkTrainSingle()
+
+
+if __name__ == "__main__":
+    main()

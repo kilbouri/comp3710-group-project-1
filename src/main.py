@@ -63,7 +63,7 @@ def testTrain():
 
 import train
 def main():
-    train.bulkTrain()
+    train.bulkTrainSingle()
 
 
 if __name__ == "__main__":
