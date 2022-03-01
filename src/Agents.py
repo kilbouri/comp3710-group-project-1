@@ -1,11 +1,12 @@
 # from msilib.schema import Error
 from random import uniform
 from Utility import endsWith
+from collections import defaultdict
 
 
 class Agent:
     # An "empty" agent which serves as the base of all other agents
-    def __init__(self, memorySize: int) -> None:
+    def __init__(self, memorySize: int = 3) -> None:
         self.name = "Empty"
         self.memory: list[int] = []
         self.memorySize: int = memorySize
@@ -20,6 +21,10 @@ class Agent:
             self.memory.pop(0)  # remove first element
         self.memory.append(opponentMove)
 
+    def reset(self):
+        self.fitness = 0
+        self.memory = []
+
     def __str__(self) -> str:
         return f"{self.name} Agent"
 
@@ -32,7 +37,7 @@ class RandomAgent(Agent):
         self.defectProbability = defectProbability
 
     def choose(self) -> int:
-        return uniform(0, 1) >= self.defectProbability
+        return int(uniform(0, 1) >= self.defectProbability)
 
 
 class CooperativeAgent(Agent):
@@ -105,22 +110,42 @@ class PavlovAgent(Agent):
         return int(not endsWith([0] * self.pavLength, self.memory))
 
 
-# class GeneticAgent(Agent):
-#     # Uses a custom ruleset by indexing a bit string with
-#     # the binary number represented by the memory state
-#     # TODO: need to keep track of own previous moves, as well as opponent's
-#     # TODO: Create a mutator constructor, that makes some change to the ruleset
-#     # TODO: rename 'ruleset' to 'chromosome'?
-#     # TODO: Create a fitness function (just return score)
-#     # TODO: need a way to encode move history into an integer to read from chromosome/ruleset
-#     def __init__(self, memorySize: int, ruleset: str) -> None:
-#         super().__init__(memorySize)
-#         self.ruleset = ruleset
-#         self.name = f"Ruleset '{ruleset}'"
+searchMethods = ['crossover', 'random']
 
-#         if (2 ** memorySize - 1) != len(ruleset):
-#             raise Error("Ruleset does not cover all (or covers too many) possible memory states")
+class GeneticAgent(Agent):
+    def __init__(self, memorySize, ruleset: str = None) -> None:
+        # ruleset can be either str or list[int]
+        super().__init__(memorySize)
+        self.name = f"Genetic"
+        self.memorySize = memorySize
+        self.ruleset = ruleset
+        if isinstance(self.ruleset, str):
+            self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
+        if self.ruleset is None:
+            self.ruleset = [round(uniform(0, 1))
+                            for _ in range(2 ** memorySize + memorySize)]
+        if (2 ** memorySize + memorySize) != len(self.ruleset):
+            raise ValueError(
+                "Ruleset does not cover all (or covers too many) possible memory states")
 
-#     def choose(self) -> int:
-#         idx = int("".join(self.memory), 2)
-#         return int(self.ruleset[idx])
+    def reproduce(self, search:str='random', partner:Agent=None) -> None:
+        if search == 'crossover':
+            assert(self.memorySize == partner.memorySize and isinstance(partner, Agent))
+            if partner.fitness == 0:
+                partner.fitness = 1
+            rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
+                  for c in zip(self.ruleset, partner.ruleset)]
+        elif search == 'random':
+            mutationRate = 0.1
+            rs = [rule if uniform(0, 1) > mutationRate else int(not rule) for rule in self.ruleset]
+        else:
+            raise ValueError("Invalid search type")
+        return GeneticAgent(self.memorySize, rs)
+
+    def choose(self) -> int:
+        if len(self.memory) < self.memorySize:
+            move = self.ruleset[len(self.ruleset) -
+                                self.memorySize + len(self.memory)]
+        else:
+            move = self.ruleset[int("".join(map(str, self.memory)), 2)]
+        return move
