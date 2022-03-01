@@ -15,6 +15,7 @@ def allsame(lst):
 
 class Comparison:
     # ONLY works with simple agents for now
+    # TODO: make this work with genetic agents, as well
     # agents passed to constructor is a list of Agent types to test between
     def __init__(self, agents: list, gameLength: int = 50, numGames: int = 10, memorySize: int = 3):
         self.agents: list[Agent] = agents
@@ -98,27 +99,27 @@ class Population:
                 batch.predefinedAgents(a, b)
                 batch.run()
 
-    def evolve(self, singleReproduction: bool = False):
+    def evolve(self, search:str='crossover'):
         # keep top 10% of population, fill back up with offspring
         # resets recycled individuals' fitness to 0 and memory
         sorted(self.population, key=lambda x: x.fitness, reverse=True)
         samplesize = int(self.populationSize*0.1)
         newpop = self.population[:samplesize]
-        if singleReproduction:
+        if search == 'crossover':
+            while len(newpop) < self.populationSize:
+                newpop.append(self.population[rr(0, samplesize)].reproduce(search=search, partner=self.population[rr(0, samplesize)]))
+        else:
             c = count(start=samplesize, step=1)
             for i in c:
                 if i < self.populationSize:
-                    newpop.append(self.population[i % samplesize].reproduce())
+                    newpop.append(self.population[i % samplesize].reproduce(search=search))
                 else:
                     break
-        else:
-            while len(newpop) < self.populationSize:
-                newpop.append(self.population[rr(0, samplesize)].reproduce(self.population[rr(0, samplesize)]))
         self.population = newpop
         for i in self.population[:samplesize]:
             i.reset()
 
-    def train(self, ngens: int, opponentType=GeneticAgent, gameLength: int = 50, numGames: int = 10, singleReproduction: bool = False):
+    def train(self, ngens: int, opponentType=GeneticAgent, gameLength: int = 50, numGames: int = 10, search:str='random'):
         # opponentType is the type of agent to play against, if GeneticAgent, plays against own population
         # gameLength is the number of moves in each game
         # numGames is the number of games to play in each batch
@@ -128,7 +129,7 @@ class Population:
         bar = Bar(f'Training against {opponentType(3).name} opponents', max=ngens)
         for i in range(ngens-1):
             self.play(opponentType, gameLength, numGames)
-            self.evolve(singleReproduction)
+            self.evolve(search=search)
             bar.next()
         self.play(opponentType, gameLength, numGames)
         bar.next()

@@ -28,4 +28,10 @@ def trainedAgent(Opponent:str, csvpath:str, nParents:int=2, memSize:int=6, Fitte
     return GeneticAgent(memSize, ruleset)
 
 def compareGAs():
-    pass
+    # Take a full set of trained agents, and compare them against each other.
+    csvpath = '../trainingCache.csv'
+    nParents = 2
+    memSize = 6
+    fittest = True
+    agents = {tp: trainedAgent(tp, csvpath, nParents, memSize, fittest) for tp in agentStrings}
+    

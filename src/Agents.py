@@ -110,6 +110,8 @@ class PavlovAgent(Agent):
         return int(not endsWith([0] * self.pavLength, self.memory))
 
 
+searchMethods = ['crossover', 'random']
+
 class GeneticAgent(Agent):
     def __init__(self, memorySize, ruleset: str = None) -> None:
         # ruleset can be either str or list[int]
@@ -128,17 +130,19 @@ class GeneticAgent(Agent):
             raise ValueError(
                 "Ruleset does not cover all (or covers too many) possible memory states")
 
-    def reproduce(self, partner=None) -> None:
+    def reproduce(self, search:str='random', partner:Agent=None) -> None:
         # two parents produce a child, child inherits more genes from fitter parent, up to 80% favoritism
-        if partner is not None: # if partner is not None, then this is a reproduction with two parents
-            assert(self.memorySize == partner.memorySize)
+        if search == 'crossover':
+            assert(self.memorySize == partner.memorySize and isinstance(partner, Agent))
             if partner.fitness == 0:
                 partner.fitness = 1
             rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
                   for c in zip(self.ruleset, partner.ruleset)]
-        else: # if partner is None, then this is a reproduction with one parent, using a mutation rate
+        elif search == 'random': # if partner is None, then this is a reproduction with one parent, using a mutation rate
             mutationRate = 0.1
             rs = [rule if uniform(0, 1) > mutationRate else int(not rule) for rule in self.ruleset]
+        else:
+            raise ValueError("Invalid search type")
         return GeneticAgent(self.memorySize, rs)
 
     def choose(self) -> int:

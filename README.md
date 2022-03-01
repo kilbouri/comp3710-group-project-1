@@ -29,7 +29,7 @@ Submit a complete technical report on a project about the Iterated Prisoners’ 
 
 ### Initial testing on simple agents, small population
 
-|       -        | Random//Random | Random//Tit For Tat | Random//Pavlov | Tit For Tat//Tit For Tat | Tit For Tat//Pavlov | Pavlov//Pavlov |
+| -              | Random//Random | Random//Tit For Tat | Random//Pavlov | Tit For Tat//Tit For Tat | Tit For Tat//Pavlov | Pavlov//Pavlov |
 | -------------- | -------------- | ------------------- | -------------- | ------------------------ | ------------------- | -------------- |
 | winner         | Random         | Random              | Pavlov         | TIE                      | TIE                 | TIE            |
 | avg A score    | 22.7           | 23.9                | 18.7           | 30.0                     | 30.0                | 30.0           |
