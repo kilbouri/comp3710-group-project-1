@@ -121,8 +121,6 @@ class GeneticAgent(Agent):
         self.ruleset = ruleset
         if isinstance(self.ruleset, str):
             self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
-        # self.rulefreq = defaultdict(int) # keep track of frequency of each move
-        # self.rulehist = []
         if self.ruleset is None:
             self.ruleset = [round(uniform(0, 1))
                             for _ in range(2 ** memorySize + memorySize)]
@@ -131,14 +129,13 @@ class GeneticAgent(Agent):
                 "Ruleset does not cover all (or covers too many) possible memory states")
 
     def reproduce(self, search:str='random', partner:Agent=None) -> None:
-        # two parents produce a child, child inherits more genes from fitter parent, up to 80% favoritism
         if search == 'crossover':
             assert(self.memorySize == partner.memorySize and isinstance(partner, Agent))
             if partner.fitness == 0:
                 partner.fitness = 1
             rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
                   for c in zip(self.ruleset, partner.ruleset)]
-        elif search == 'random': # if partner is None, then this is a reproduction with one parent, using a mutation rate
+        elif search == 'random':
             mutationRate = 0.1
             rs = [rule if uniform(0, 1) > mutationRate else int(not rule) for rule in self.ruleset]
         else:
@@ -147,17 +144,8 @@ class GeneticAgent(Agent):
 
     def choose(self) -> int:
         if len(self.memory) < self.memorySize:
-            # first few moves, use the sequence at the end of ruleset
             move = self.ruleset[len(self.ruleset) -
                                 self.memorySize + len(self.memory)]
         else:
             move = self.ruleset[int("".join(map(str, self.memory)), 2)]
-            # self.rulefreq[move] += 1
-        # self.rulehist.append(move)
         return move
-
-    def reset(self):
-        # here for if I want to add extra stuff to reset
-        super().reset()
-        # self.rulefreq = defaultdict(int)
-        # self.rulehist = []
