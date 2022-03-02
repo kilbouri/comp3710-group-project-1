@@ -46,24 +46,16 @@ def testCompare():
     # output comp dataframe to csv
     comp.df().to_csv("../simple.csv")
 
-
-def testTrain():
+# training with population GAs
+def testTrainGA():
     pop = Population(memorySize=6, populationSize=500)
-    pop.train(100, opponentType=TFTAgent, gameLength=30, numGames=10)
+    pop.train(100, opponentType=TFTAgent, gameLength=30, numGames=10, search='crossover')
     print(f'fittest ruleset is {pop.fittestChromosome()}')
     print(f'average ruleset is {pop.averageChromosome()}')
 
-    # now, run a batch between the average ruleset and the fittest ruleset
-    # batch = Batch(None, None, gameLength=64, numGames=10)
-    # batch.predefinedAgents(GeneticAgent(ruleset=pop.fittestChromosome()), GeneticAgent(ruleset=pop.averageChromosome()))
-    # batch.predefinedAgents(GeneticAgent(memorySize=6,ruleset='DDCDDCCDCCDDCDDDDCCDDCCCDCDCCDCDDCCDCDDDDCCCCDCDDDCDDDDCDCCCDDDDCDDDDC'), GeneticAgent(memorySize=6,ruleset='DDCCCCCDDDCDCDCCCCDDDDCCDCCDDDDCCDCCDCDDCDDDCDDDCCDDDDCDCDDDCDDCDCDCDC'))
-    # aScore, bScore = batch.run()
-    # print(f"Average score for fittest: {mean(aScore)}")
-    # print(f"Average score for average: {mean(bScore)}")
-
 import train
 def main():
-    train.bulkTrainSingle()
+    train.testtrain()
 
 
 if __name__ == "__main__":
