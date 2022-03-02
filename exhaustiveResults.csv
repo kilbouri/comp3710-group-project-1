@@ -1,0 +1,14 @@
+Opponent,ruleset,memSize,gameLen,nGames,search
+CooperativeAgent,DXXXXXXXXXXXXXXXDDDD,4,30,5,exhaustive
+DefectiveAgent,XXXXXXXXXXXXXXXDDDDD,4,30,5,exhaustive
+TFTAgent,CXXXXXXXXXXXXXXXCCCC,4,30,5,exhaustive
+TFNTAgent,CDCXDXXXDXXXXXXXXXXX,4,30,5,exhaustive
+STFTAgent,CXXXXXXXCXXXXXXXCCCC,4,30,5,exhaustive
+PavlovAgent,CXXXXXXXXXXXXXXXCCCC,4,30,5,exhaustive
+RandomAgent,DDDDDCDCDDD,3,30,5,exhaustive
+CooperativeAgent,DXXXXXXXDDD,3,30,5,exhaustive
+DefectiveAgent,XXXXXXXDDDD,3,30,5,exhaustive
+TFTAgent,CXXXXXXXCCC,3,30,5,exhaustive
+TFNTAgent,CDDXCXXXCDD,3,30,5,exhaustive
+STFTAgent,CXXXCXXXCCC,3,30,5,exhaustive
+PavlovAgent,CXXXXXXXCCC,3,30,5,exhaustive
