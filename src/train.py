@@ -91,9 +91,9 @@ def testtrain(search:str=None):
             average = pop.averageChromosome()
             writer.writerow([agent, fittest, average, memsize, generations, turns, games, search])
 
-def hillclimbgreedy(opponents:list[str]):
+# Stochastic hill climbing
+def hillclimbgreedy(opponents:list[str], ruleset:str=None):
     # opponents is a list of simple agents to test against
-
     memsize = 4
 
     results = {}
@@ -102,8 +102,8 @@ def hillclimbgreedy(opponents:list[str]):
     # test every possible string against every listed simple agent
     for agent in opponents:
         bar = Counter(f'hill climb greedy against {agentStrings[agent](3).name} opponents ')
-        ruleset = [choice('CD') for _ in range(2 ** memsize + memsize)]
-        ruleset = ''.join(ruleset)
+        if ruleset is None:
+            ruleset = ''.join([choice('CD') for _ in range(2 ** memsize + memsize)])
         topAgentFit = 0
         topAgentRuleset = ruleset
         changeswithoutimprovement = 0
@@ -143,8 +143,52 @@ def hillclimbgreedy(opponents:list[str]):
     for agent in results:
         print(f'{agent} {results[agent]}')
 
+# Steepest-Ascent Hill climbing
+def hillclimbSteep(opponents:list[str]):
+    # opponents is a list of simple agents to test against
+    memsize = 4
+
+    results = {}
+    bitschanged = []
+    agentList = []
+    
+    # test every possible string against every listed simple agent
+    for agent in opponents:
+        bar = Counter(f'hill climb steep against {agentStrings[agent](3).name} opponents ')
+        ruleset = ''.join([choice('CD') for _ in range(2 ** memsize + memsize)])
+        while True:
+            #add the original ruleset agent and all its neighbors to the list
+            agentList.append(GeneticAgent(memsize, ruleset))
+            for n in range(2 ** memsize + memsize):
+                #invert the bit at the nth position
+                neighbor = ruleset
+                neighbor = list(neighbor)
+                neighbor[n] = 'C' if neighbor[n] == 'D' else 'D'
+                neighbor = ''.join(neighbor)
+                agentList.append(GeneticAgent(memsize, ''.join(neighbor)))
+            #run the batch
+            pop = Population(population=agentList, memorySize=memsize, populationSize=1)
+            pop.play(opponentType=agentStrings[agent], gameLength=30, numGames=5)
+            fittest = pop.fittestChromosome()
+            #if the agent hasnt improved, break
+            ruleset = ''.join(ruleset)
+            if fittest == ruleset:
+                results[agent] = fittest
+                break
+            #if the agent has improved, save the ruleset and reset the counter
+            else:
+                ruleset = fittest
+                agentList.clear()
+            bar.next()
+        bar.finish()
+
+    # print results
+    for agent in results:
+        print(f'{agent} {results[agent]}')
+
 
 def main():
+    hillclimbSteep(agentStrings.keys())
     hillclimbgreedy(agentStrings.keys())
 
 
