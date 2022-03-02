@@ -59,52 +59,6 @@ def exhaustive(opponents:list[str], memsize:int, csvpath:str):
         for agent, ruleset in results.items():
             writer.writerow([agent, ruleset, '', memsize,'', gamelen, numgames, 'exhaustive'])
 
-
-def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:int=10, turns:int=64, generations:int=1000):
-    # search=None will run all possible search methods
-    # search=str will only run specified search method
-    # search=list will run all specified search methods
-
-    # defaults to running all methods
-    if search is None:
-        search = searchMethods
-    if isinstance(search, list):
-        for s in search:
-            bulktrain(csvpath, s, memsize, popsize, games, turns, generations)
-        return
-    if search == 'exhaustive':
-        return exhaustive([a for a in agentStrings.keys() if a != 'GeneticAgent'], memsize, csvpath)
-
-    allAgents = list(agentStrings.keys())
-    if not path.exists(csvpath):
-        with open(csvpath, 'w') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(columns)
-    with open(csvpath, 'a') as csvfile:
-        writer = csv.writer(csvfile)
-        for agent in allAgents:
-            pop = Population(memorySize=memsize, populationSize=popsize)
-            pop.train(generations, opponentType=agentStrings[agent], gameLength=turns, numGames=games, search=search)
-            fittest = pop.fittestChromosome()
-            average = pop.averageChromosome()
-            writer.writerow([agent, fittest, average, memsize, generations, turns, games, search])
-
-def testtrain():
-    # Run a set of training against each simple agent. Record the results in a csv file.
-    # 1000 generations, 10 games per generation, 500 agents, 64 turns per game, 3 memory
-    # This one uses single reproduction
-    memsize = 3
-    popsize = 30
-    games = 5
-    turns = 30
-    generations = 100
-    search = searchMethods
-    csvpath = '../testTrain.csv'
-
-    if path.exists(csvpath):
-        remove(csvpath)
-    return bulktrain(csvpath, search, memsize, popsize, games, turns, generations)
-
 # Stochastic hill climbing
 def hillclimbgreedy(opponents:list[str]):
     # opponents is a list of simple agents to test against
@@ -199,6 +153,51 @@ def hillclimbSteep(opponents:list[str]):
     for agent in results:
         print(f'{agent} {results[agent]}')
 
+
+def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:int=10, turns:int=64, generations:int=1000):
+    # search=None will run all possible search methods
+    # search=str will only run specified search method
+    # search=list will run all specified search methods
+
+    # defaults to running all methods
+    if search is None:
+        search = searchMethods
+    if isinstance(search, list):
+        for s in search:
+            bulktrain(csvpath, s, memsize, popsize, games, turns, generations)
+        return
+    if search == 'exhaustive':
+        return exhaustive([a for a in agentStrings.keys() if a != 'GeneticAgent'], memsize, csvpath)
+
+    allAgents = list(agentStrings.keys())
+    if not path.exists(csvpath):
+        with open(csvpath, 'w') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(columns)
+    with open(csvpath, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        for agent in allAgents:
+            pop = Population(memorySize=memsize, populationSize=popsize)
+            pop.train(generations, opponentType=agentStrings[agent], gameLength=turns, numGames=games, search=search)
+            fittest = pop.fittestChromosome()
+            average = pop.averageChromosome()
+            writer.writerow([agent, fittest, average, memsize, generations, turns, games, search])
+
+def testtrain():
+    # Run a set of training against each simple agent. Record the results in a csv file.
+    # 1000 generations, 10 games per generation, 500 agents, 64 turns per game, 3 memory
+    # This one uses single reproduction
+    memsize = 3
+    popsize = 30
+    games = 5
+    turns = 30
+    generations = 100
+    search = searchMethods
+    csvpath = '../testTrain.csv'
+
+    if path.exists(csvpath):
+        remove(csvpath)
+    return bulktrain(csvpath, search, memsize, popsize, games, turns, generations)
 
 def main():
     hillclimbSteep(agentStrings.keys())
