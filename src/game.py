@@ -1,5 +1,6 @@
 from Agents import Agent
 from pprint import pprint
+from Utility import mean
 
 # game class to run a game between two agents
 
@@ -11,9 +12,6 @@ choiceMap = {
     1: "defect",
     0: "cooperate"
 }
-
-def mean(l: list) -> float:
-    return sum(l) / len(l)
 
 def moves(agentA, agentB, numSteps):
     for _ in range(numSteps):
@@ -74,4 +72,6 @@ class Batch:
             fitnessA, fitnessB = game.play()
             self.fitnessA.append(fitnessA)
             self.fitnessB.append(fitnessB)
+            agentA.memory = []
+            agentB.memory = []
         return self.fitnessA, self.fitnessB
