@@ -1,5 +1,5 @@
 # from msilib.schema import Error
-from random import uniform
+from random import uniform, choice
 from Utility import endsWith
 from collections import defaultdict
 
@@ -122,8 +122,7 @@ class GeneticAgent(Agent):
         if isinstance(self.ruleset, str):
             self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
         if self.ruleset is None:
-            self.ruleset = [round(uniform(0, 1))
-                            for _ in range(2 ** memorySize + memorySize)]
+            self.ruleset = [choice([0,1]) for _ in range(2 ** memorySize + memorySize)]
         if (2 ** memorySize + memorySize) != len(self.ruleset):
             raise ValueError(
                 "Ruleset does not cover all (or covers too many) possible memory states")
