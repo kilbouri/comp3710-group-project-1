@@ -1,4 +1,7 @@
 Opponent,ruleset,memSize,gameLen,nGames,search
+RandomAgent,DDDDDDCDDDDDDCDDDDDD,4,30,5,exhaustive
+RandomAgent,DDDCDDDCDDDDCDDCDDDD,4,30,5,exhaustive
+RandomAgent,DDDDDDDDDDDCDDDDDCDD,4,30,5,exhaustive
 CooperativeAgent,DXXXXXXXXXXXXXXXDDDD,4,30,5,exhaustive
 DefectiveAgent,XXXXXXXXXXXXXXXDDDDD,4,30,5,exhaustive
 TFTAgent,CXXXXXXXXXXXXXXXCCCC,4,30,5,exhaustive
