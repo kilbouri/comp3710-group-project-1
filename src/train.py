@@ -47,7 +47,7 @@ def exhaustive(opponents:list[str]):
 
     # print results
     for agent in results:
-        print(agent, results[agent] if len(results[agent]) < 5 else len(results[agent]))
+        print(agent, ''.join([l[0] if all(l[0] == m for m in l) else 'X' for l in zip(*results[agent])]))
 
 
 def bulktrain(search:str=None):
