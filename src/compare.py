@@ -6,11 +6,7 @@ from Agents import *
 import pandas as pd
 from random import randrange as rr, shuffle
 from progress.bar import Bar
-
-
-def allsame(lst):
-    # Returns True if all elements in a list are the same
-    return all(x == lst[0] for x in lst)
+from Utility import allsame
 
 
 class Comparison:
@@ -27,11 +23,9 @@ class Comparison:
     def run(self):
         # run one batch per combination (with replacement) of agents
         for agentA, agentB in cwr(self.agents, 2):
-            batch = Batch(agentA, agentB, self.gameLength,
-                          self.numGames, self.memorySize)
+            batch = Batch(agentA, agentB, gameLength=self.gameLength, numGames=self.numGames, memorySize=self.memorySize)
             resultA, resultB = batch.run()
-            self.results[(agentA(self.memorySize).name, agentB(
-                self.memorySize).name)] = [resultA, resultB]
+            self.results[(agentA(self.memorySize).name, agentB(self.memorySize).name)] = [resultA, resultB]
 
         return self.results
 

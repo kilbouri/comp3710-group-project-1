@@ -49,8 +49,7 @@ def exhaustive(opponents:list[str], memsize:int, csvpath:str):
         results[agent] = cache[max(cache.keys())]
 
     # compile results, taking into account 'dont care' conditions
-    results = {k:''.join([l[0] if all(l[0] == m for m in l) else 'X' for l in zip(*v)])
-        for k,v in results.items()}
+    results = {k:''.join([l[0] if allsame(l) else 'X' for l in zip(*v)]) for k,v in results.items()}
     if not path.exists(csvpath):
         with open(csvpath, 'w') as csvfile:
             writer = csv.writer(csvfile)
