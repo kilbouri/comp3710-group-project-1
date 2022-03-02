@@ -110,7 +110,7 @@ class PavlovAgent(Agent):
         return int(not endsWith([0] * self.pavLength, self.memory))
 
 
-searchMethods = ['crossover', 'random']
+searchMethods = ['crossover', 'random', 'exhaustive']
 
 class GeneticAgent(Agent):
     def __init__(self, memorySize, ruleset: str = None) -> None:
@@ -139,7 +139,7 @@ class GeneticAgent(Agent):
             mutationRate = 0.1
             rs = [rule if uniform(0, 1) > mutationRate else int(not rule) for rule in self.ruleset]
         else:
-            raise ValueError("Invalid search type")
+            raise ValueError(f"Invalid search type {search}")
         return GeneticAgent(self.memorySize, rs)
 
     def choose(self) -> int:
