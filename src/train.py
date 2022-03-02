@@ -60,6 +60,11 @@ def exhaustive(opponents:list[str], memsize:int, csvpath:str):
             writer.writerow([agent, ruleset, '', memsize,'', gamelen, numgames, 'exhaustive'])
 
 # Stochastic hill climbing
+# One Genetic Agent is created with a (random) ruleset. As it plays against a agent, it ajusts its ruleset
+# to a neighbor of its current ruleset (flips a random single bit) and plays against the same agent.
+# The agent with the best fitness is saved as the fittest agent and continues.
+# If the agent does not improve, it is discarded and a new agent is created with a random ruleset from the fittest
+# agent. This process continues until the fittest agent is found(until all posibilities have been tried).
 def hillclimbgreedy(opponents:list[str]):
     # opponents is a list of simple agents to test against
     memsize = 4
@@ -111,6 +116,10 @@ def hillclimbgreedy(opponents:list[str]):
         print(f'{agent} {results[agent]}')
 
 # Steepest-Ascent Hill climbing
+# One Genetic Agent is created with a (random) ruleset. A population of agents is created with the neighbor ruleset.
+# (A single bit is flipped in each position of the ruleset as a new agent) and all agents play against the same agent.
+# The fittest agent is saved as the fittest agent and continues (with its ruleset).
+# If the fittest agent does not improve, then break and return the fittest agent.
 def hillclimbSteep(opponents:list[str]):
     # opponents is a list of simple agents to test against
     memsize = 4
@@ -142,7 +151,7 @@ def hillclimbSteep(opponents:list[str]):
             if fittest == ruleset:
                 results[agent] = fittest
                 break
-            #if the agent has improved, save the ruleset and reset the counter
+            #if the agent has improved, save the ruleset
             else:
                 ruleset = fittest
                 agentList.clear()
