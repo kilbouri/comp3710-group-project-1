@@ -9,6 +9,8 @@ from collections import defaultdict
 from Utility import mean
 from progress.bar import Bar
 
+from sys import argv # DEBUG
+
 # Collection of different training functions]
 
 agentStrings = {
@@ -27,7 +29,7 @@ columns = ['Opponent', 'Fittest', 'Average', 'memSize', 'nGens', 'gameLen', 'nGa
 def exhaustive(opponents:list[str]):
     # opponents is a list of simple agents to test against
 
-    memsize = 3
+    memsize = 4
 
     results = {}
     
@@ -109,7 +111,7 @@ def testtrain(search:str):
 
 
 def main():
-    exhaustive(opponents=['RandomAgent', 'CooperativeAgent', 'DefectiveAgent', 'TFTAgent', 'TFNTAgent', 'STFTAgent', 'PavlovAgent'])
+    exhaustive(opponents=argv[1:])
 
 
 if __name__ == "__main__":
