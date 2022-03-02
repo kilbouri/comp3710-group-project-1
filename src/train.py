@@ -92,7 +92,7 @@ def testtrain(search:str=None):
             writer.writerow([agent, fittest, average, memsize, generations, turns, games, search])
 
 # Stochastic hill climbing
-def hillclimbgreedy(opponents:list[str], ruleset:str=None):
+def hillclimbgreedy(opponents:list[str]):
     # opponents is a list of simple agents to test against
     memsize = 4
 
@@ -102,8 +102,7 @@ def hillclimbgreedy(opponents:list[str], ruleset:str=None):
     # test every possible string against every listed simple agent
     for agent in opponents:
         bar = Counter(f'hill climb greedy against {agentStrings[agent](3).name} opponents ')
-        if ruleset is None:
-            ruleset = ''.join([choice('CD') for _ in range(2 ** memsize + memsize)])
+        ruleset = ''.join([choice('CD') for _ in range(2 ** memsize + memsize)])
         topAgentFit = 0
         topAgentRuleset = ruleset
         changeswithoutimprovement = 0
