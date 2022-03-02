@@ -5,6 +5,9 @@ from pandas import DataFrame
 import csv
 from os import path
 from itertools import product
+from collections import defaultdict
+from Utility import mean
+from progress.bar import Bar
 
 # Collection of different training functions]
 
@@ -21,13 +24,30 @@ agentStrings = {
 
 columns = ['Opponent', 'Fittest', 'Average', 'memSize', 'nGens', 'gameLen', 'nGames', 'search']
 
-# def exhaustive(opponents:list):
-#     memsize = 3
+def exhaustive(opponents:list[str]):
+    # opponents is a list of simple agents to test against
 
-#     cache = {}  # {fitness:[chromosomes]}
-#     # test every possible string against every possible simple agent
-#     for ruleset in product(['C', 'D'], repeat=(2 ** memsize + memsize)):
-#         ruleset = ''.join(ruleset)
+    memsize = 3
+
+    results = {}
+    
+    # test every possible string against every listed simple agent
+    for agent in opponents:
+        cache = defaultdict(list)
+        bar = Bar(f'exhaustive search against {agentStrings[agent](3).name} opponents', max=2 ** (2**memsize + memsize))
+        for ruleset in product(['C', 'D'], repeat=(2 ** memsize + memsize)):
+            bar.next()
+            ruleset = ''.join(ruleset)
+            batch = Batch(None, agentStrings[agent], gameLength=30,numGames=5, memorySize=memsize)
+            batch.predefinedAgents(GeneticAgent(memsize, ruleset), None)
+            fitnessA, fitnessB = batch.run()
+            cache[mean(fitnessA)].append(ruleset)
+        bar.finish()
+        results[agent] = cache[max(cache.keys())]
+
+    # print results
+    for agent in results:
+        print(agent, results[agent] if len(results[agent]) < 5 else len(results[agent]))
 
 
 def bulktrain(search:str=None):
@@ -35,7 +55,7 @@ def bulktrain(search:str=None):
     # 1000 generations, 10 games per generation, 500 agents, 64 turns per game, 3 memory
 
     memsize = 3
-    popsize = 500
+    popsize = 100
     games = 10
     turns = 64
     generations = 1000
@@ -46,8 +66,8 @@ def bulktrain(search:str=None):
         for s in searchMethods:
             bulktrain(s)
         return
-    # if search == 'exhaustive':
-    #     return exhaustive([a for a in agentStrings.values() if a != GeneticAgent])
+    if search == 'exhaustive':
+        return exhaustive([a for a in agentStrings.keys() if a != 'GeneticAgent'])
 
 
     allAgents = list(agentStrings.keys())
@@ -73,7 +93,7 @@ def testtrain(search:str):
     games = 5
     turns = 30
     generations = 100
-    search = 'crossover'
+    search = search
     csvpath = '../testTrain.csv'
 
     allAgents = list(agentStrings.keys())
@@ -89,7 +109,7 @@ def testtrain(search:str):
 
 
 def main():
-    testtrain()
+    exhaustive(opponents=['RandomAgent', 'CooperativeAgent', 'DefectiveAgent', 'TFTAgent', 'TFNTAgent', 'STFTAgent', 'PavlovAgent'])
 
 
 if __name__ == "__main__":

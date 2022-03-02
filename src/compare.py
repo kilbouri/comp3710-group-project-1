@@ -126,7 +126,7 @@ class Population:
 
         # train the population for a number of generations
         
-        bar = Bar(f'Training against {opponentType(3).name} opponents', max=ngens)
+        bar = Bar(f'{search} training against {opponentType(3).name} opponents', max=ngens)
         for i in range(ngens-1):
             self.play(opponentType, gameLength, numGames)
             self.evolve(search=search)
