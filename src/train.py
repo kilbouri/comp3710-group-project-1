@@ -1,15 +1,13 @@
-from game import Game, Batch, mean, REWARD_TABLE
+from game import *
 from Agents import *
 from compare import Comparison, Population
 from pandas import DataFrame
 import csv
-from os import path
+from os import path, remove
 from itertools import product
 from collections import defaultdict
-from Utility import mean
+from Utility import *
 from progress.bar import Bar
-
-from sys import argv # DEBUG
 
 # Collection of different training functions]
 
@@ -101,6 +99,8 @@ def testtrain():
     search = searchMethods
     csvpath = '../testTrain.csv'
 
+    if path.exists(csvpath):
+        remove(csvpath)
     return bulktrain(csvpath, search, memsize, popsize, games, turns, generations)
 
 
