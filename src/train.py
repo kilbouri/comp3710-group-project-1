@@ -4,6 +4,7 @@ from compare import Comparison, Population
 from pandas import DataFrame
 import csv
 from os import path, remove
+from sys import argv
 from itertools import product
 from Utility import *
 from progress.bar import Bar
@@ -209,8 +210,10 @@ def testtrain():
     return bulktrain(csvpath, search, memsize, popsize, games, turns, generations)
 
 def main():
-    hillclimbSteep(agentStrings.keys())
-    hillclimbgreedy(agentStrings.keys())
+    # hillclimbSteep(agentStrings.keys())
+    # hillclimbgreedy(agentStrings.keys())
+
+    exhaustive([argv[1]], 5, '../longExhaustive.csv')
 
 
 if __name__ == "__main__":
