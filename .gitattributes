@@ -9,6 +9,8 @@
 *.md text
 *.sh text
 *.py text
+*.csv text
+*.ps1 text
 
 # Denote all files that are truly binary and should not be modified.
 *.png binary
