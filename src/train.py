@@ -211,13 +211,15 @@ def testtrain():
 
 def main():
     
-    # csvpath = '../testTrain.csv'
+    csvpath = '../GA2Train.csv'
     # with open(csvpath, 'w') as csvfile:
     #     writer = csv.writer(csvfile)
     #     writer.writerow(columns)
-    # bulktrain(csvpath, search='crossover', GA=GeneticAgent2)
+    GA2search = searchMethods
+    GA2search.remove('exhaustive')
+    bulktrain(csvpath, search=GA2search, GA='GeneticAgent2')
 
-    testtrain()
+    # testtrain()
 
     # hillclimbSteep(agentStrings.keys())
     # hillclimbgreedy(agentStrings.keys())

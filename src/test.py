@@ -5,7 +5,7 @@ from pandas import DataFrame
 import csv
 from os import path
 
-columns = ['Opponent', 'Ruleset', 'memSize', 'search', 'GAscore', 'opponentscore']
+columns = ['GA','Opponent', 'Ruleset', 'memSize', 'search', 'GAscore', 'opponentscore']
 
 # import a trained agent
 def trainedAgent(Opponent:str, csvpath:str, search:str, memSize:int=6, Fittest:bool=True) -> GeneticAgent:
@@ -52,16 +52,15 @@ def testAgents():
         writer.writerow(columns)
         for row in reader:
             GA, opponent, ruleset, memsize, generations, turns, games, search = row
-            GA = agentStrings[GA]
             try:
                 memsize, turns, games = map(int, [memsize, turns, games])
             except ValueError:
                 print(f'Error: {row}')
                 exit()
-            agent = GA(memsize, ruleset)
+            agent = agentStrings[GA](memsize, ruleset)
             opponent = agentStrings[opponent](memsize)
-            print(f'{opponent} vs {agent.name}: {Game(agent, opponent, turns).play()}')
-            writer.writerow([opponent, ruleset, memsize, search, *Game(agent, opponent, turns).play()])
+            print(f'{agent.name} vs {opponent}: {Game(agent, opponent, turns).play()}')
+            writer.writerow([GA, opponent, ruleset, memsize, search, *Game(agent, opponent, turns).play()])
         outfile.close()
 
 
