@@ -109,9 +109,6 @@ class PavlovAgent(Agent):
 
         return int(not endsWith([0] * self.pavLength, self.memory))
 
-
-searchMethods = ['crossover', 'random', 'exhaustive']
-
 class GeneticAgent(Agent):
     def __init__(self, memorySize, ruleset: str = None) -> None:
         # ruleset can be either str or list[int]

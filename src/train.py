@@ -66,9 +66,9 @@ def exhaustive(opponents:list[str], memsize:int, csvpath:str):
 # The agent with the best fitness is saved as the fittest agent and continues.
 # If the agent does not improve, it is discarded and a new agent is created with a random ruleset from the fittest
 # agent. This process continues until the fittest agent is found(until all posibilities have been tried).
-def hillclimbgreedy(opponents:list[str]):
+def hillclimbgreedy(opponents:list[str], memsize:int, csvpath:str):
     # opponents is a list of simple agents to test against
-    memsize = 4
+    # memsize = 4
 
     results = {}
     bitschanged = []
@@ -113,17 +113,21 @@ def hillclimbgreedy(opponents:list[str]):
         bar.finish()
 
     # print results
-    for agent in results:
-        print(f'{agent} {results[agent]}')
+    # columns = ['Opponent', 'Fittest', 'Average', 'memSize', 'nGens', 'gameLen', 'nGames', 'search']
+    with open(csvpath, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        for agent, ruleset in results.items():
+            writer.writerow([agent, ruleset, '', memsize,'', 30, 5, 'hill climb greedy'])
+
 
 # Steepest-Ascent Hill climbing
 # One Genetic Agent is created with a (random) ruleset. A population of agents is created with the neighbor ruleset.
 # (A single bit is flipped in each position of the ruleset as a new agent) and all agents play against the same agent.
 # The fittest agent is saved as the fittest agent and continues (with its ruleset).
 # If the fittest agent does not improve, then break and return the fittest agent.
-def hillclimbSteep(opponents:list[str]):
+def hillclimbSteep(opponents:list[str], memsize:int, csvpath:str):
     # opponents is a list of simple agents to test against
-    memsize = 4
+    # memsize = 4
 
     results = {}
     bitschanged = []
@@ -160,8 +164,11 @@ def hillclimbSteep(opponents:list[str]):
         bar.finish()
 
     # print results
-    for agent in results:
-        print(f'{agent} {results[agent]}')
+    # print results
+    with open(csvpath, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        for agent, ruleset in results.items():
+            writer.writerow([agent, ruleset, '', memsize,'', 30, 5, 'hill climb steep'])
 
 
 def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:int=10, turns:int=64, generations:int=1000):
@@ -177,7 +184,11 @@ def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:in
             bulktrain(csvpath, s, memsize, popsize, games, turns, generations)
         return
     if search == 'exhaustive':
-        return exhaustive([a for a in agentStrings.keys() if a != 'GeneticAgent'], memsize, csvpath)
+        return exhaustive(list(agentStrings.keys()), memsize, csvpath)
+    if search == 'hillclimbgreedy':
+        return hillclimbgreedy(list(agentStrings.keys()), memsize, csvpath)
+    if search == 'hillclimbSteep':
+        return hillclimbSteep(list(agentStrings.keys()), memsize, csvpath)
 
     allAgents = list(agentStrings.keys())
     if not path.exists(csvpath):
@@ -210,10 +221,17 @@ def testtrain():
     return bulktrain(csvpath, search, memsize, popsize, games, turns, generations)
 
 def main():
+    # csvpath = '../testTrain.csv'
+    # with open(csvpath, 'w') as csvfile:
+    #     writer = csv.writer(csvfile)
+    #     writer.writerow(columns)
     # hillclimbSteep(agentStrings.keys())
     # hillclimbgreedy(agentStrings.keys())
-
-    exhaustive([argv[1]], 5, '../longExhaustive.csv')
+    csvpath = '../trainingCache.csv'
+    searchMethods = ['crossover', 'random', 'exhaustive', 'hillclimbgreedy', 'hillclimbSteep']
+    agents = list(agentStrings.keys())
+    bulktrain(csvpath, ['hillclimbgreedy', 'hillclimbSteep'], 3, 100, 5, 30, 1000)
+    bulktrain(csvpath, ['hillclimbgreedy', 'hillclimbSteep'], 4, 100, 5, 30, 1000)
 
 
 if __name__ == "__main__":
