@@ -51,13 +51,14 @@ def testAgents():
         writer = csv.writer(outfile)
         writer.writerow(columns)
         for row in reader:
-            opponent, ruleset, memsize, generations, turns, games, search = row
+            GA, opponent, ruleset, memsize, generations, turns, games, search = row
+            GA = agentStrings[GA]
             try:
                 memsize, turns, games = map(int, [memsize, turns, games])
             except ValueError:
                 print(f'Error: {row}')
                 exit()
-            agent = GeneticAgent(memsize, ruleset)
+            agent = GA(memsize, ruleset)
             opponent = agentStrings[opponent](memsize)
             print(f'{opponent} vs {agent.name}: {Game(agent, opponent, turns).play()}')
             writer.writerow([opponent, ruleset, memsize, search, *Game(agent, opponent, turns).play()])

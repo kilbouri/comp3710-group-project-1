@@ -63,13 +63,14 @@ class Comparison:
 class Population:
     # class to manage, train, and test a population of genetic agents
     # only tests/trains against either itself, or one other agent type at a time
-    def __init__(self, population: list = None, memorySize: int = 3, populationSize: int = 100):
+    def __init__(self, population: list = None, memorySize: int = 3, populationSize: int = 100, GA = GeneticAgent):
         # population is a list of Agent objects, as an initial population. blank generates populationSize population
         # memorySize is the size of the memory of each agent, corresponds to ruleset size
         # populationSize is the number of agents in the population
+        self.GA = GA
         self.populationSize: int = populationSize if population is None else len(
             population)
-        self.population: list[Agent] = [GeneticAgent(memorySize) for _ in range(populationSize)] if population is None else population
+        self.population: list[Agent] = [GA(memorySize) for _ in range(populationSize)] if population is None else population
 
     def play(self, opponentType=GeneticAgent, gameLength: int = 50, numGames: int = 10):
         # opponentType is the type of agent to play against, if GeneticAgent, plays against own population
@@ -79,9 +80,9 @@ class Population:
         # For each matchup, if the opponent is a GeneticAgent, play against random other individual
         # If the opponent is a simple agent, train each agent against the simple agent
 
-        if opponentType != GeneticAgent:
+        if opponentType != self.GA:
             for individual in self.population:
-                batch = Batch(GeneticAgent, opponentType, gameLength, numGames)
+                batch = Batch(self.GA, opponentType, gameLength, numGames)
                 batch.predefinedAgents(individual, None)
                 batch.run()
         else:
@@ -89,7 +90,7 @@ class Population:
             shuffle(p)
             # NOTE: fails if populationSize is odd
             for a, b in zip(p[:self.populationSize//2], p[self.populationSize//2:]):
-                batch = Batch(GeneticAgent, GeneticAgent, gameLength, numGames)
+                batch = Batch(self.GA, self.GA, gameLength, numGames)
                 batch.predefinedAgents(a, b)
                 batch.run()
 
