@@ -25,7 +25,7 @@ agentStrings = {
     'GeneticAgent': GeneticAgent
 }
 
-columns = ['Opponent', 'Fittest', 'Average', 'memSize', 'nGens', 'gameLen', 'nGames', 'search']
+columns = ['Opponent', 'Fittest', 'memSize', 'nGens', 'gameLen', 'nGames', 'search']
 
 def exhaustive(opponents:list[str], memsize:int, csvpath:str):
     # opponents is a list of simple agents to test against
@@ -58,7 +58,7 @@ def exhaustive(opponents:list[str], memsize:int, csvpath:str):
     with open(csvpath, 'a') as csvfile:
         writer = csv.writer(csvfile)
         for agent, ruleset in results.items():
-            writer.writerow([agent, ruleset, '', memsize,'', gamelen, numgames, 'exhaustive'])
+            writer.writerow([agent, ruleset, memsize,'', gamelen, numgames, 'exhaustive'])
 
 # Stochastic hill climbing
 # One Genetic Agent is created with a (random) ruleset. As it plays against a agent, it ajusts its ruleset
@@ -117,7 +117,7 @@ def hillclimbgreedy(opponents:list[str], memsize:int, csvpath:str):
     with open(csvpath, 'a') as csvfile:
         writer = csv.writer(csvfile)
         for agent, ruleset in results.items():
-            writer.writerow([agent, ruleset, '', memsize,'', 30, 5, 'hill climb greedy'])
+            writer.writerow([agent, ruleset, memsize,'', 30, 5, 'hill climb greedy'])
 
 
 # Steepest-Ascent Hill climbing
@@ -168,7 +168,7 @@ def hillclimbSteep(opponents:list[str], memsize:int, csvpath:str):
     with open(csvpath, 'a') as csvfile:
         writer = csv.writer(csvfile)
         for agent, ruleset in results.items():
-            writer.writerow([agent, ruleset, '', memsize,'', 30, 5, 'hill climb steep'])
+            writer.writerow([agent, ruleset, memsize,'', 30, 5, 'hill climb steep'])
 
 
 def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:int=10, turns:int=64, generations:int=1000):
