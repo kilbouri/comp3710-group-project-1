@@ -14,17 +14,6 @@ from collections import defaultdict
 
 # Collection of different training functions]
 
-agentStrings = {
-    'RandomAgent': RandomAgent,
-    'CooperativeAgent': CooperativeAgent,
-    'DefectiveAgent': DefectiveAgent,
-    'TFTAgent': TFTAgent,
-    'TFNTAgent': TFNTAgent,
-    'STFTAgent': STFTAgent,
-    'PavlovAgent': PavlovAgent,
-    'GeneticAgent': GeneticAgent
-}
-
 columns = ['Opponent', 'Fittest', 'memSize', 'nGens', 'gameLen', 'nGames', 'search']
 
 def exhaustive(opponents:list[str], memsize:int, csvpath:str):

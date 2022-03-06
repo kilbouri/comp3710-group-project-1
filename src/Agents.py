@@ -3,7 +3,6 @@ from random import uniform, choice
 from Utility import endsWith
 from collections import defaultdict
 
-
 class Agent:
     # An "empty" agent which serves as the base of all other agents
     def __init__(self, memorySize: int = 3) -> None:
@@ -145,3 +144,15 @@ class GeneticAgent(Agent):
         else:
             move = self.ruleset[int("".join(map(str, self.memory)), 2)]
         return move
+
+
+agentStrings = {
+    'RandomAgent': RandomAgent,
+    'CooperativeAgent': CooperativeAgent,
+    'DefectiveAgent': DefectiveAgent,
+    'TFTAgent': TFTAgent,
+    'TFNTAgent': TFNTAgent,
+    'STFTAgent': STFTAgent,
+    'PavlovAgent': PavlovAgent,
+    'GeneticAgent': GeneticAgent
+}
