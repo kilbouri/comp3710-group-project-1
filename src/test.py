@@ -56,10 +56,10 @@ def testAgents():
                 memsize, turns, games = map(int, [memsize, turns, games])
             except ValueError:
                 print(f'Error: {row}')
-                exit()
+                raise
             agent = agentStrings[GA](memsize, ruleset)
             opponent = agentStrings[opponent](memsize)
-            print(f'{agent.name} vs {opponent}: {Game(agent, opponent, turns).play()}')
+            print(f'{agent.name}({search}) vs {opponent}: {Game(agent, opponent, turns).play()}')
             writer.writerow([GA, opponent, ruleset, memsize, search, *Game(agent, opponent, turns).play()])
         outfile.close()
 

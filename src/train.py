@@ -106,7 +106,7 @@ def hillclimbgreedy(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAg
     with open(csvpath, 'a') as csvfile:
         writer = csv.writer(csvfile)
         for agent, ruleset in results.items():
-            writer.writerow([agentStrings[GA](3).name, agent, ruleset, memsize,'', 30, 5, 'hill climb greedy'])
+            writer.writerow([agentStrings[GA](3).name, agent, ruleset, memsize,'', 30, 5, 'hillclimbgreedy'])
 
 
 # Steepest-Ascent Hill climbing
@@ -128,7 +128,7 @@ def hillclimbSteep(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAge
         ruleset = ''.join({0:'C',1:'D'}[i] for i in agentStrings[GA](memsize).ruleset)
         while True:
             #add the original ruleset agent and all its neighbors to the list
-            agentList.append(GA(memsize, ruleset))
+            agentList.append(agentStrings[GA](memsize, ruleset))
             for n in range(agentList[-1].rslen):
                 #invert the bit at the nth position
                 neighbor = ruleset
@@ -157,7 +157,7 @@ def hillclimbSteep(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAge
     with open(csvpath, 'a') as csvfile:
         writer = csv.writer(csvfile)
         for agent, ruleset in results.items():
-            writer.writerow([GA, agent, ruleset, memsize,'', 30, 5, 'hill climb steep'])
+            writer.writerow([GA, agent, ruleset, memsize,'', 30, 5, 'hillclimbSteep'])
 
 
 def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:int=10, turns:int=64, generations:int=1000, GA='GeneticAgent'):
@@ -212,21 +212,10 @@ def testtrain():
 def main():
     
     csvpath = '../GA2Train.csv'
-    # with open(csvpath, 'w') as csvfile:
-    #     writer = csv.writer(csvfile)
-    #     writer.writerow(columns)
-    GA2search = searchMethods
-    GA2search.remove('exhaustive')
-    bulktrain(csvpath, search=GA2search, GA='GeneticAgent2')
-
+    bulktrain(csvpath, search=[argv[1]], GA='GeneticAgent2')
+    # ['crossover', 'random', 'hillclimbgreedy', 'hillclimbSteep']
     # testtrain()
-
-    # hillclimbSteep(agentStrings.keys())
-    # hillclimbgreedy(agentStrings.keys())
-    # csvpath = '../trainingCache.csv'
-    # agents = list(agentStrings.keys())
-    # bulktrain(csvpath, ['hillclimbgreedy', 'hillclimbSteep'], 3, 100, 5, 30, 1000)
-    # bulktrain(csvpath, ['hillclimbgreedy', 'hillclimbSteep'], 4, 100, 5, 30, 1000)
+    
 
 
 if __name__ == "__main__":
