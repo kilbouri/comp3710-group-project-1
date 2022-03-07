@@ -1,3 +1,4 @@
+from numpy import append
 from game import *
 from Agents import *
 from compare import Comparison, Population
@@ -16,7 +17,7 @@ from collections import defaultdict
 
 columns = ['GA','Opponent', 'Fittest', 'memSize', 'nGens', 'gameLen', 'nGames', 'search']
 
-searchMethods = ['crossover', 'random', 'exhaustive', 'hillclimbgreedy', 'hillclimbSteep']
+searchMethods = ['crossover', 'random', 'exhaustive', 'hillclimbgreedy', 'hillclimbsteep', 'tabuSerach']
 
 def exhaustive(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAgent'):
     # opponents is a list of simple agents to test against
@@ -56,7 +57,7 @@ def exhaustive(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAgent')
 # to a neighbor of its current ruleset (flips a random single bit) and plays against the same agent.
 # The agent with the best fitness is saved as the fittest agent and continues.
 # If the agent does not improve, it is discarded and a new agent is created with a random ruleset from the fittest
-# agent. This process continues until the fittest agent is found(until all posibilities have been tried).
+# agent. This process continues until the fittest agent is found(the new agent was worse than the prev).
 def hillclimbgreedy(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAgent'):
     # opponents is a list of simple agents to test against
     # memsize = 4
@@ -85,19 +86,11 @@ def hillclimbgreedy(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAg
                 bitschanged.clear()
             #if the agent has not improved, increment the try counter
             else:
-                ruleset = topAgentRuleset
-                changeswithoutimprovement += 1
-            #if no improvement has been made for all neighbors, break
-            if changeswithoutimprovement > (len(topAgentRuleset))-1:
-                maxnotfound = 0
-                results[agent] = topAgentRuleset
                 break
             #change ruleset by flipping a random bit
             ruleset = list(ruleset)
             #check if the bit was changed already and change a new one if it was
             bit = randint(0, len(ruleset)-1)
-            while bit in bitschanged:
-                bit = randint(0, len(ruleset)-1)
             bitschanged.append(bit)
             ruleset[bit] = 'C' if ruleset[bit] == 'D' else 'D'
             ruleset = ''.join(ruleset)
@@ -114,7 +107,7 @@ def hillclimbgreedy(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAg
 # (A single bit is flipped in each position of the ruleset as a new agent) and all agents play against the same agent.
 # The fittest agent is saved as the fittest agent and continues (with its ruleset).
 # If the fittest agent does not improve, then break and return the fittest agent.
-def hillclimbSteep(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAgent'):
+def hillclimbsteep(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAgent'):
     # opponents is a list of simple agents to test against
     # memsize = 4
 
@@ -157,8 +150,72 @@ def hillclimbSteep(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAge
     with open(csvpath, 'a') as csvfile:
         writer = csv.writer(csvfile)
         for agent, ruleset in results.items():
-            writer.writerow([GA, agent, ruleset, memsize,'', 30, 5, 'hillclimbSteep'])
+            writer.writerow([GA, agent, ruleset, memsize,'', 30, 5, 'hillclimbsteep'])
 
+# Tabu Search
+# One Genetic Agent is created with a (random) ruleset. As it plays against a agent, it ajusts its ruleset
+# to a neighbor of its current ruleset (flips a random single bit) and plays against the same agent.
+# As the agent plays, the .
+# If the agent does not improve, it is discarded and a new agent is created with a random ruleset from the fittest
+# agent. This process continues until the fittest agent is found(until all posibilities have been tried).
+def tabuSerach(opponents:list[str], memsize:int, csvpath:str, GA='GeneticAgent'):
+    # opponents is a list of simple agents to test against
+    # memsize = 4
+
+    results = {}
+
+    tabuListSize = (2**memsize+memsize)
+    
+    # test every possible string against every listed simple agent
+    for agent in opponents:
+        bar = Counter(f'tabu search against {agentStrings[agent](3).name} opponents ')
+        ruleset = ''.join({0:'C',1:'D'}[i] for i in agentStrings[GA](memsize).ruleset)
+        topAgentFit = 0
+        topAgentRuleset = ruleset
+        changeswithoutimprovement = 0
+
+        tabuSerach = []
+
+        maxnotfound = 1
+        while maxnotfound:
+            bar.next()
+            tabuSerach.append(agentStrings[GA](memsize, ruleset))
+            batch = Batch(None, agentStrings[agent], gameLength=30,numGames=5, memorySize=memsize)
+            batch.predefinedAgents(agentStrings[GA](memsize, ruleset), None)
+            fitnessA, fitnessB = batch.run()
+            #if the agent has improved, save the ruleset
+            if mean(fitnessA) > topAgentFit:
+                print(fitnessA)
+                topAgentFit = mean(fitnessA)
+                topAgentRuleset = ruleset
+                changeswithoutimprovement = 0
+            #if the agent has not improved, increment the try counter
+            else:
+                ruleset = topAgentRuleset
+                changeswithoutimprovement += 1
+            #if no improvement has been made for all neighbors, break
+            if changeswithoutimprovement > (len(topAgentRuleset))-1:
+                maxnotfound = 0
+                results[agent] = topAgentRuleset
+                break
+            #change ruleset by flipping a random bit
+            ruleset = list(ruleset)
+            #check if the ruleset has already been tried and change a new one if it was
+            prevrs = ruleset
+            while ruleset in tabuSerach:
+                ruleset = prevrs
+                bit = randint(0, len(ruleset)-1)
+                ruleset[bit] = 'C' if ruleset[bit] == 'D' else 'D'
+            tabuSerach.append(ruleset)
+            if(len(tabuSerach) > tabuListSize):
+                tabuSerach.pop(0)
+            ruleset = ''.join(ruleset)
+        bar.finish()
+
+    with open(csvpath, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        for agent, ruleset in results.items():
+            writer.writerow([agentStrings[GA](3).name, agent, ruleset, memsize,'', 30, 5, 'tabusearch'])
 
 def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:int=10, turns:int=64, generations:int=1000, GA='GeneticAgent'):
     # search=None will run all possible search methods
@@ -176,8 +233,10 @@ def bulktrain(csvpath:str, search=None, memsize:int=3, popsize:int=100, games:in
         return exhaustive(list(agentStrings.keys()), memsize, csvpath, GA)
     if search == 'hillclimbgreedy':
         return hillclimbgreedy(list(agentStrings.keys()), memsize, csvpath, GA)
-    if search == 'hillclimbSteep':
-        return hillclimbSteep(list(agentStrings.keys()), memsize, csvpath, GA)
+    if search == 'hillclimbsteep':
+        return hillclimbsteep(list(agentStrings.keys()), memsize, csvpath, GA)
+    if search == 'tabusearch':
+        return tabuSerach(list(agentStrings.keys()), memsize, csvpath, GA)
 
     allAgents = list(agentStrings.keys())
     if not path.exists(csvpath):
@@ -212,7 +271,7 @@ def testtrain():
 def main():
     
     csvpath = '../GA2Train.csv'
-    bulktrain(csvpath, search=[argv[1]], GA='GeneticAgent2')
+    bulktrain(csvpath, search=[argv[1]], GA='GeneticAgent')
     # ['crossover', 'random', 'hillclimbgreedy', 'hillclimbSteep']
     # testtrain()
     
