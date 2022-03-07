@@ -1,8 +1,7 @@
 # from msilib.schema import Error
-from random import uniform
+from random import uniform, choice
 from Utility import endsWith
 from collections import defaultdict
-
 
 class Agent:
     # An "empty" agent which serves as the base of all other agents
@@ -109,28 +108,25 @@ class PavlovAgent(Agent):
 
         return int(not endsWith([0] * self.pavLength, self.memory))
 
-
-searchMethods = ['crossover', 'random', 'exhaustive']
-
 class GeneticAgent(Agent):
     def __init__(self, memorySize, ruleset: str = None) -> None:
         # ruleset can be either str or list[int]
         super().__init__(memorySize)
-        self.name = f"Genetic"
+        self.name = f"GeneticAgent"
         self.memorySize = memorySize
         self.ruleset = ruleset
+        self.rslen = 2 ** memorySize + memorySize
         if isinstance(self.ruleset, str):
             self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
         if self.ruleset is None:
-            self.ruleset = [round(uniform(0, 1))
-                            for _ in range(2 ** memorySize + memorySize)]
-        if (2 ** memorySize + memorySize) != len(self.ruleset):
+            self.ruleset = [choice([0,1]) for _ in range(self.rslen)]
+        if self.rslen != len(self.ruleset):
             raise ValueError(
                 "Ruleset does not cover all (or covers too many) possible memory states")
 
-    def reproduce(self, search:str='random', partner:Agent=None) -> None:
+    def evolvestr(self, search:str='random', partner:Agent=None) -> str:
         if search == 'crossover':
-            assert(self.memorySize == partner.memorySize and isinstance(partner, Agent))
+            assert(self.memorySize == partner.memorySize)
             if partner.fitness == 0:
                 partner.fitness = 1
             rs = [c[int(uniform(0, 1) > max(min(self.fitness / partner.fitness, 0.8), 0.2))]
@@ -140,7 +136,10 @@ class GeneticAgent(Agent):
             rs = [rule if uniform(0, 1) > mutationRate else int(not rule) for rule in self.ruleset]
         else:
             raise ValueError(f"Invalid search type {search}")
-        return GeneticAgent(self.memorySize, rs)
+        return rs
+
+    def reproduce(self, search:str='random', partner:Agent=None) -> Agent:
+        return GeneticAgent(self.memorySize, self.evolvestr(search, partner))
 
     def choose(self) -> int:
         if len(self.memory) < self.memorySize:
@@ -149,3 +148,51 @@ class GeneticAgent(Agent):
         else:
             move = self.ruleset[int("".join(map(str, self.memory)), 2)]
         return move
+
+class GeneticAgent2(GeneticAgent):
+    # GeneticAgent2 is a GeneticAgent, but it keeps track of both the opponent's moves, as well as its own
+
+    def __init__(self, memorySize:int, ruleset: str = None) -> None:
+        super().__init__(memorySize)
+        self.name = f"GeneticAgent2"
+        self.ruleset = ruleset
+        self.rslen = 2 ** (2*self.memorySize) + memorySize
+        if isinstance(self.ruleset, str):
+            self.ruleset = [{'C':0, 'D':1}[c] for c in self.ruleset]
+        if self.ruleset is None:
+            self.ruleset = [choice([0,1]) for _ in range(self.rslen)]
+        if self.rslen != len(self.ruleset):
+            raise ValueError(
+                "Ruleset does not cover all (or covers too many) possible memory states")
+        self.memorySelf:list[int] = []
+
+    def reproduce(self, search:str='random', partner:Agent=None) -> Agent:
+        return GeneticAgent2(self.memorySize, self.evolvestr(search, partner))
+
+    def choose(self) -> int:
+        if len(self.memory) < self.memorySize:
+            move = self.ruleset[len(self.ruleset) -
+                                self.memorySize + len(self.memory)]
+        else:
+            self.memorySelf = self.memorySelf[-3:]
+            move = self.ruleset[int("".join(map(str, self.memorySelf + self.memory)), 2)]
+        self.memorySelf.append(move)
+        return move
+
+    def reset(self):
+        super().reset()
+        self.memorySelf = []
+        
+
+
+agentStrings = {
+    'RandomAgent': RandomAgent,
+    'CooperativeAgent': CooperativeAgent,
+    'DefectiveAgent': DefectiveAgent,
+    'TFTAgent': TFTAgent,
+    'TFNTAgent': TFNTAgent,
+    'STFTAgent': STFTAgent,
+    'PavlovAgent': PavlovAgent,
+    'GeneticAgent': GeneticAgent,
+    'GeneticAgent2': GeneticAgent2
+}
